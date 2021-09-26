@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 493321183}
   - component: {fileID: 493321184}
+  - component: {fileID: 493321185}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -166,6 +167,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9850054bbe1c4004ab3a20977d543cff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &493321185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493321182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60595a754a7ec194b870d818e88a8d10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  touchRadius: 0.5
 --- !u!1 &764305504
 GameObject:
   m_ObjectHideFlags: 0
