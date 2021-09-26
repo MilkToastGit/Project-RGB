@@ -27,7 +27,7 @@ public abstract class Prism : MonoBehaviour
     {
         if (held)
         {
-            transform.position = InputManager.Instance.WorldTouchPosition;
+            transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition);
         }
     }
 

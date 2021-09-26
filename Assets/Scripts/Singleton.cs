@@ -19,6 +19,12 @@ public class Singleton<T> : MonoBehaviour where T : Component
         } 
     }
 
+    private void OnEnable ()
+    {
+        if (instance == null)
+            instance = this as T;
+    }
+
     private void OnDestroy ()
     {
         if (instance == this)
