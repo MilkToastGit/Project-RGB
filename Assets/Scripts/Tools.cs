@@ -13,4 +13,9 @@ public static class Tools
     {
         return value >= Mathf.Min (value1, value2) && value <= Mathf.Max (value1, value2);
     }
+
+    public static int Wrap (int n, int m)
+    {
+        return n >= 0 ? n % m : (n % m + m) % m;
+    }
 }
