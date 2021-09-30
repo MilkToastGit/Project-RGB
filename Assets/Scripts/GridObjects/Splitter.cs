@@ -9,7 +9,6 @@ public class Splitter : GridObject
     public override void ReceiveBeam (int direction, LightBeam beam)
     {
         LightBeam[] components = beam.GetComponents ();
-        Debug.Log (components.Length);
         if (components.Length == 1)
             components = new LightBeam[] { components[0], components[0] };
 

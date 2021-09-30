@@ -12,7 +12,7 @@ public class IsoGrid : Singleton<IsoGrid>
     [SerializeField]
     private Vector2 gridSpacing;
     [SerializeField]
-    private GridObjectMono[] gridObjects;
+    private GridObject[] gridObjects;
 
     [SerializeField]
     private GridObject[,] grid;
@@ -29,16 +29,31 @@ public class IsoGrid : Singleton<IsoGrid>
     [ContextMenu ("CastBeamTest")]
     public void CastBeamTest () { GenerateGrid ();  CastBeam (0, 3, 2, new LightBeam (1, 1, 1)); }
 
+    private void Awake ()
+    {
+        GenerateGrid ();
+        if (!InstantiatePersistentScene.loaded)
+            InstantiatePersistentScene.OnManagersLoaded += SubscribeToEvents;
+        else
+            SubscribeToEvents ();
+    }
+
+    private void SubscribeToEvents ()
+    {
+        EventManager.Instance.OnGridObjectMoved += MoveObject;
+        InstantiatePersistentScene.OnManagersLoaded -= SubscribeToEvents;
+    }
+
     private void GenerateGrid (Vector2Int size)
     {
         grid = new GridObject[size.x, size.y];
         gridWidth = (size.x - 1) * gridSpacing.x;
         gridHeight = (size.y - 1) * gridSpacing.y;
 
-        foreach (GridObjectMono obj in gridObjects)
+        foreach (GridObject obj in gridObjects)
         {
-            if (obj.GridObject != null)
-                grid[obj.GridObject.GridPosition.x, obj.GridObject.GridPosition.y] = obj.GridObject;
+            if (obj != null)
+                grid[obj.GridPosition.x, obj.GridPosition.y] = obj;
         }
 
         for (int y = 0; y < size.y; y++)
@@ -54,6 +69,12 @@ public class IsoGrid : Singleton<IsoGrid>
         }
     }
 
+    private void MoveObject (Vector2Int from, Vector2Int to)
+    {
+        grid[to.x, to.y] = grid[from.x, from.y];
+        grid[from.x, from.y] = null;
+    }
+
     public bool GridCast (int x, int y, int direction, out Vector2Int hitPoint)
     {
         Vector2Int lastPoint = new Vector2Int (x, y);
@@ -62,11 +83,13 @@ public class IsoGrid : Singleton<IsoGrid>
             Vector2Int point = TranslatePoint (lastPoint, direction);
             if (!point.x.isBetween (0, gridSize.x - 1) || !point.y.isBetween (0, gridSize.y - 1))
             {
+                print ($"point ({point.x}, {point.y}) is out of bounds");
                 hitPoint = new Vector2Int (lastPoint.x, lastPoint.y);
                 return false;
             }
             if (grid[point.x, point.y] != null)
             {
+                print ($"point ({point.x}, {point.y}) contains object ({grid[point.x, point.y]})");
                 hitPoint = new Vector2Int (point.x, point.y);
                 return true;
             }
@@ -81,9 +104,15 @@ public class IsoGrid : Singleton<IsoGrid>
     public void CastBeam (int x, int y, int direction, LightBeam beam)
     {
         if (GridCast (x, y, direction, out Vector2Int hitPoint))
-            grid[hitPoint.x, hitPoint.y].ReceiveBeam (direction, beam);
+            grid[hitPoint.x, hitPoint.y]?.ReceiveBeam (direction, beam);
 
-        Debug.DrawLine (GridToWorld (x, y), GridToWorld (hitPoint), beam.Color, 20);
+        Debug.DrawLine (GridToWorld (x, y), GridToWorld (hitPoint), beam.Color, 0.5f);
+
+        //foreach (GridObject obj in grid)
+        //{
+        //    if (obj != null)
+        //        Debug.DrawRay (GridToWorld (obj.GridPosition), Vector2.up * 0.5f, Color.white, 2);
+        //}
     }
 
     public Vector2 GridToWorld (Vector2Int point) { return GridToWorld (point.x, point.y); }
@@ -156,7 +185,6 @@ public class IsoGrid : Singleton<IsoGrid>
                 y -= 1;
                 break;
         }
-        Debug.Log ($"{x}, {y}");
 
         return new Vector2Int (x, y);
 

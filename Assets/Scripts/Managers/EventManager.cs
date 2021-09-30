@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
+
 public class EventManager : SingletonPersistent<EventManager>
 {
-    public event Action OnGridChanged;
-    public void GridChanged () => OnGridChanged?.Invoke ();
+    public event Action<Vector2Int, Vector2Int> OnGridObjectMoved;
+    public void GridObjectMoved (Vector2Int from, Vector2Int to) => OnGridObjectMoved?.Invoke (from, to);
 }

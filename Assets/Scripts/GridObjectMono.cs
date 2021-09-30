@@ -48,8 +48,8 @@ public class GridObjectMono : MonoBehaviour
         if (gridObject.GridPosition != newPos)
         {
             GridObject.SetPosition (IsoGrid.Instance.WorldToGrid (transform.position, false));
-            if (callEvent)
-                EventManager.Instance.GridChanged ();
+            //if (callEvent)
+            //    EventManager.Instance.GridObjectMoved ();
         }
 
         transform.position = IsoGrid.Instance.GridToWorld (GridObject.GridPosition);

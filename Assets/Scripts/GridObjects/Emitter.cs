@@ -7,29 +7,30 @@ public class Emitter : GridObject
     public int direction;
     public LightBeam beam;
 
-    public override void DrawAndSetParams ()
-    {
-        direction = EditorGUILayout.IntField ("Direction: ", direction);
-        beam = new LightBeam (
-            EditorGUILayout.Toggle ("R: ", beam == null ? true : beam.R),
-            EditorGUILayout.Toggle ("G: ", beam == null ? true : beam.G),
-            EditorGUILayout.Toggle ("B: ", beam == null ? true : beam.B)
-            );
-    }
+    //public override void DrawAndSetParams ()
+    //{
+    //    direction = EditorGUILayout.IntField ("Direction: ", direction);
+    //    beam = new LightBeam (
+    //        EditorGUILayout.Toggle ("R: ", beam == null ? true : beam.R),
+    //        EditorGUILayout.Toggle ("G: ", beam == null ? true : beam.G),
+    //        EditorGUILayout.Toggle ("B: ", beam == null ? true : beam.B)
+    //        );
+    //}
 
-    private void EmitBeam ()
+    private void EmitBeam (UnityEngine.Vector2Int from, UnityEngine.Vector2Int to)
     {
-        UnityEngine.Debug.Log ("yo");
         IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction, beam);
     }
 
-    public override void OnEnable ()
+    public override void OnManagersLoaded ()
     {
-        EventManager.Instance.OnGridChanged += EmitBeam;
+        base.OnManagersLoaded ();
+        EventManager.Instance.OnGridObjectMoved += EmitBeam;
     }
 
     public override void OnDisable ()
     {
-        EventManager.Instance.OnGridChanged -= EmitBeam;
+        base.OnDisable ();
+        EventManager.Instance.OnGridObjectMoved -= EmitBeam;
     }
 }
