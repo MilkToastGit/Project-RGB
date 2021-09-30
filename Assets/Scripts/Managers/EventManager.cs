@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class EventManager : SingletonPersistent<EventManager>
 {
-    public event Action<Vector2Int, Vector2Int> OnGridObjectMoved;
-    public void GridObjectMoved (Vector2Int from, Vector2Int to) => OnGridObjectMoved?.Invoke (from, to);
+    public event Action OnGridObjectMoved;
+    public void GridObjectMoved () => OnGridObjectMoved?.Invoke ();
+
+    public event Action OnAllBeamsTerminated;
+    public void AllBeamsTerminated () => OnAllBeamsTerminated?.Invoke ();
+    public bool AllBeamsTerminatedHasListeners => OnAllBeamsTerminated != null;
 }

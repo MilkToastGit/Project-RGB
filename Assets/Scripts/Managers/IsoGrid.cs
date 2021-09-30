@@ -13,6 +13,8 @@ public class IsoGrid : Singleton<IsoGrid>
     private Vector2 gridSpacing;
     [SerializeField]
     private GridObject[] gridObjects;
+    [SerializeField]
+    private int maxPropagationSteps;
 
     [SerializeField]
     private GridObject[,] grid;
@@ -26,9 +28,6 @@ public class IsoGrid : Singleton<IsoGrid>
         GenerateGrid (gridSize);
     }
 
-    [ContextMenu ("CastBeamTest")]
-    public void CastBeamTest () { GenerateGrid ();  CastBeam (0, 3, 2, new LightBeam (1, 1, 1)); }
-
     private void Awake ()
     {
         GenerateGrid ();
@@ -40,7 +39,6 @@ public class IsoGrid : Singleton<IsoGrid>
 
     private void SubscribeToEvents ()
     {
-        EventManager.Instance.OnGridObjectMoved += MoveObject;
         InstantiatePersistentScene.OnManagersLoaded -= SubscribeToEvents;
     }
 
@@ -69,28 +67,46 @@ public class IsoGrid : Singleton<IsoGrid>
         }
     }
 
-    private void MoveObject (Vector2Int from, Vector2Int to)
+    public void Reallocate (GridObject obj, Vector2Int destination)
     {
-        grid[to.x, to.y] = grid[from.x, from.y];
-        grid[from.x, from.y] = null;
+        grid[obj.GridPosition.x, obj.GridPosition.y] = null;
+        grid[destination.x, destination.y] = obj;
+        obj.SetPosition (destination);
+
+        PropagateBeams ();
     }
 
-    public bool GridCast (int x, int y, int direction, out Vector2Int hitPoint)
+    // I don't really know what propagate means but it sounds cool here
+    private void PropagateBeams ()
     {
-        Vector2Int lastPoint = new Vector2Int (x, y);
+        print ("Beginning Propagation");
+
+        // Step 1
+        EventManager.Instance.GridObjectMoved ();
+        
+        // Step 2
+        for (int i = 0; i < maxPropagationSteps && EventManager.Instance.AllBeamsTerminatedHasListeners; i++)
+            EventManager.Instance.AllBeamsTerminated ();
+
+        print ("Propagation Complete");
+    }
+
+    public bool GridCast (Vector2Int origin, int direction, out Vector2Int hitPoint)
+    {
+        Vector2Int lastPoint = origin;
         for (int i = 0; i < Mathf.Max (gridSize.x, gridSize.y); i++)
         {
             Vector2Int point = TranslatePoint (lastPoint, direction);
             if (!point.x.isBetween (0, gridSize.x - 1) || !point.y.isBetween (0, gridSize.y - 1))
             {
                 print ($"point ({point.x}, {point.y}) is out of bounds");
-                hitPoint = new Vector2Int (lastPoint.x, lastPoint.y);
+                hitPoint = lastPoint;
                 return false;
             }
-            if (grid[point.x, point.y] != null)
+            if (GetAt (point) != null)
             {
-                print ($"point ({point.x}, {point.y}) contains object ({grid[point.x, point.y]})");
-                hitPoint = new Vector2Int (point.x, point.y);
+                print ($"point ({point.x}, {point.y}) contains object ({GetAt (point)})");
+                hitPoint = point;
                 return true;
             }
 
@@ -101,18 +117,17 @@ public class IsoGrid : Singleton<IsoGrid>
         return false;
     }
 
-    public void CastBeam (int x, int y, int direction, LightBeam beam)
+    public Vector2Int CastBeam (LightBeam beam)
     {
-        if (GridCast (x, y, direction, out Vector2Int hitPoint))
-            grid[hitPoint.x, hitPoint.y]?.ReceiveBeam (direction, beam);
+        Debug.Log ("Start " + beam.Color);
+        if (beam.Origin == null) throw new System.Exception ("Cannot cast beam with no origin.");
 
-        Debug.DrawLine (GridToWorld (x, y), GridToWorld (hitPoint), beam.Color, 0.5f);
+        if (GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint))
+            GetAt (hitPoint)?.ReceiveBeam (beam);
 
-        //foreach (GridObject obj in grid)
-        //{
-        //    if (obj != null)
-        //        Debug.DrawRay (GridToWorld (obj.GridPosition), Vector2.up * 0.5f, Color.white, 2);
-        //}
+        Debug.DrawLine (GridToWorld (beam.Origin.x, beam.Origin.y), GridToWorld (hitPoint), beam.Color, 0.5f);
+        Debug.Log ("End " + beam.Color);
+        return hitPoint;
     }
 
     public Vector2 GridToWorld (Vector2Int point) { return GridToWorld (point.x, point.y); }
@@ -206,4 +221,7 @@ public class IsoGrid : Singleton<IsoGrid>
         //        break;
         //}
     }
+
+    private GridObject GetAt (Vector2Int position) => grid[position.x, position.y];
+    private GridObject SetAt (Vector2Int position, GridObject obj) => grid[position.x, position.y] = obj;
 }

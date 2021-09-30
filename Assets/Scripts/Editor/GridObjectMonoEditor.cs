@@ -24,7 +24,7 @@ public class GridObjectMonoEditor : Editor
             obj.SnapToGrid (false);
         }
 
-        obj.GridObject.DrawAndSetParams ();
+        //obj.GridObject.DrawAndSetParams ();
 
         if (obj.transform.hasChanged)
         {

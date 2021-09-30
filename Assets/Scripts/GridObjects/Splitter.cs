@@ -6,7 +6,7 @@ public class Splitter : GridObject
 {
     public override GridObjectType Type => GridObjectType.Splitter;
 
-    public override void ReceiveBeam (int direction, LightBeam beam)
+    public override void ReceiveBeam (LightBeam beam)
     {
         LightBeam[] components = beam.GetComponents ();
         if (components.Length == 1)
@@ -14,14 +14,13 @@ public class Splitter : GridObject
 
         if (components.Length == 2)
         {
-            IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction - 1, components[0]);
-            IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction + 1, components[1]);
+            components[0].Cast (GridPosition, beam.Direction - 1);
+            components[1].Cast (GridPosition, beam.Direction + 1);
         }
         else if (components.Length == 3)
         {
-            IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction - 1, components[0]);
-            IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction, components[1]);
-            IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction + 1, components[2]);
+            for (int i = 0; i < 3; i++)
+                components[i].Cast (GridPosition, beam.Direction + i - 1);
         }
     }
 }

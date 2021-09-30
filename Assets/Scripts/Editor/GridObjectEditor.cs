@@ -18,7 +18,7 @@ public class GridObjectEditor : Editor
 
         if (obj.transform.hasChanged)
         {
-            obj.SnapToGrid (false);
+            obj.SnapToGrid ();
             obj.transform.hasChanged = false;
         }
     }

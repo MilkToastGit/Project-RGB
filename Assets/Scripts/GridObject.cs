@@ -1,9 +1,12 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class GridObject : MonoBehaviour
 {
     public virtual GridObjectType Type { get; }
+    protected virtual bool isMultiInput => false;
 
     [SerializeField]
     [HideInInspector]
@@ -13,11 +16,11 @@ public class GridObject : MonoBehaviour
 
     public Vector2Int GridPosition => gridPos;
 
+    protected List<LightBeam> inputBuffer;
     private Interactable interactable;
     private bool held = false;
 
-    public virtual void ReceiveBeam (int direction, LightBeam beam) { }
-    public virtual void DrawAndSetParams () { }
+    public virtual void ReceiveBeam (LightBeam beam) { if (isMultiInput) inputBuffer.Add (beam); }
 
     public void SetPosition (int x, int y) => gridPos = new Vector2Int (x, y);
 
@@ -27,7 +30,9 @@ public class GridObject : MonoBehaviour
     private void Awake ()
     {
         if (movable)
-        interactable = GetComponent<Interactable> ();
+            interactable = GetComponent<Interactable> ();
+        if (isMultiInput)
+            inputBuffer = new List<LightBeam> ();
     }
 
     private void OnInteract (Vector2 touchPos)
@@ -52,15 +57,11 @@ public class GridObject : MonoBehaviour
         SnapToGrid ();
     }
 
-    public void SnapToGrid (bool callEvent = true)
+    public void SnapToGrid ()
     {
         Vector2Int newPos = IsoGrid.Instance.WorldToGrid (transform.position, false);
         if (gridPos != newPos)
-        {
-            if (callEvent)
-                EventManager.Instance.GridObjectMoved (gridPos, newPos);
-            SetPosition (IsoGrid.Instance.WorldToGrid (transform.position, false));
-        }
+            IsoGrid.Instance.Reallocate (this, newPos);
 
         transform.position = IsoGrid.Instance.GridToWorld (GridPosition);
     }
@@ -73,7 +74,7 @@ public class GridObject : MonoBehaviour
             interactable.OnInteract += OnInteract;
     }
 
-    public virtual void OnManagersLoaded () {    }
+    public virtual void OnManagersLoaded () { }
 
     public virtual void OnDisable ()
     {

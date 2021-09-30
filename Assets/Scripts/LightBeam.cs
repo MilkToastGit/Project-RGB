@@ -1,17 +1,30 @@
+using UnityEngine;
+
 [System.Serializable]
 public class LightBeam
 {
     public static LightBeam Red => new LightBeam (true, false, false);
     public static LightBeam Green => new LightBeam (false, true, false);
     public static LightBeam Blue => new LightBeam (false, false, true);
+    public static LightBeam Cyan => new LightBeam (false, true, true);
+    public static LightBeam Magenta => new LightBeam (true, false, true);
+    public static LightBeam Yellow => new LightBeam (true, true, false);
 
-    [UnityEngine.SerializeField]
+    [SerializeField]
     private bool r, g, b;
+    private Vector2Int origin, termination;
+    private int direction;
 
-    public UnityEngine.Color Color => new UnityEngine.Color ((r?1:0), (g?1:0), (b?1:0));
+    public Color Color => new Color ((r?1:0), (g?1:0), (b?1:0));
     public bool R => r;
     public bool G => g;
     public bool B => b;
+    public Vector2Int Origin => origin;
+    public Vector2Int Termination => termination;
+    public int Direction => direction;
+    public Vector3[] Positions => new Vector3[] {
+        IsoGrid.Instance.GridToWorld (origin).ToVector3 (), 
+        IsoGrid.Instance.GridToWorld (termination).ToVector3 () };
 
     public int ComponentCount => (r?1:0) + (g?1:0) + (b?1:0);
 
@@ -29,6 +42,14 @@ public class LightBeam
         this.b = b > 0;
     }
 
+    public void Cast (Vector2Int origin, int direction)
+    {
+        this.direction = direction;
+        this.origin = origin;
+        termination = IsoGrid.Instance.CastBeam (this);
+        BeamRenderer.Instance.BufferBeam (this);
+    }
+
     public LightBeam[] GetComponents ()
     {
         LightBeam[] components = new LightBeam[ComponentCount];
@@ -39,5 +60,13 @@ public class LightBeam
         if (b) components[i++] = Blue;
 
         return components;
+    }
+
+    public static LightBeam operator + (LightBeam beam1, LightBeam beam2)
+    {
+        if (beam2.r) beam1.r = true;
+        if (beam2.g) beam1.g = true;
+        if (beam2.b) beam1.b = true;
+        return beam1;
     }
 }
