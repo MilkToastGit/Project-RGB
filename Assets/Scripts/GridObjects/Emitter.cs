@@ -1,5 +1,6 @@
 using UnityEditor;
 
+[System.Serializable]
 public class Emitter : GridObject
 {
     public override GridObjectType Type => GridObjectType.Emitter;
@@ -18,15 +19,16 @@ public class Emitter : GridObject
 
     private void EmitBeam ()
     {
+        UnityEngine.Debug.Log ("yo");
         IsoGrid.Instance.CastBeam (GridPosition.x, GridPosition.y, direction, beam);
     }
 
-    private void OnEnable ()
+    public override void OnEnable ()
     {
         EventManager.Instance.OnGridChanged += EmitBeam;
     }
 
-    private void OnDisable ()
+    public override void OnDisable ()
     {
         EventManager.Instance.OnGridChanged -= EmitBeam;
     }

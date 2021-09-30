@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class IsoGrid : MonoBehaviour
+public class IsoGrid : Singleton<IsoGrid>
 {
-    private static IsoGrid instance;
-
-    public static IsoGrid Instance => instance;
-
     [SerializeField]
     private Vector2Int gridSize;
     [SerializeField]
@@ -24,18 +20,9 @@ public class IsoGrid : MonoBehaviour
     [HideInInspector]
     private float gridWidth, gridHeight;
 
-    private void OnEnable ()
-    {
-        if (instance == null)
-            instance = this;
-        GenerateGrid ();
-    }
-
     [ContextMenu ("GenerateGrid")]
     private void GenerateGrid ()
     {
-        if (instance == null)
-            instance = this;
         GenerateGrid (gridSize);
     }
 

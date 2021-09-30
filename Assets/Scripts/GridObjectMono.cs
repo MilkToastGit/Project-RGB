@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEditor;
 
 [RequireComponent (typeof(Interactable))]
 public class GridObjectMono : MonoBehaviour
 {
-    public GridObject GridObject;
+    [SerializeField]
+    private GridObject gridObject;
+
+    public GridObject GridObject => gridObject;
     public GridObjectType Type;
 
     [SerializeField]
@@ -32,32 +36,50 @@ public class GridObjectMono : MonoBehaviour
     private void Update ()
     {
         if (held)
+        {
+            transform.position = InputManager.Instance.WorldTouchPosition;
             SnapToGrid ();
+        }
     }
 
-    public void SnapToGrid ()
+    public void SnapToGrid (bool callEvent = true)
     {
-        if (GridObject == null) return;
-
         Vector2Int newPos = IsoGrid.Instance.WorldToGrid (transform.position, false);
-        if (GridObject.GridPosition != newPos)
+        if (gridObject.GridPosition != newPos)
         {
             GridObject.SetPosition (IsoGrid.Instance.WorldToGrid (transform.position, false));
-            gameObject.transform.position = IsoGrid.Instance.GridToWorld (GridObject.GridPosition);
+            if (callEvent)
+                EventManager.Instance.GridChanged ();
+        }
 
-            //if (EventManager.Instance != null)
-            //    EventManager.Instance.GridChanged ();
+        transform.position = IsoGrid.Instance.GridToWorld (GridObject.GridPosition);
+    }
+
+    public void SetGridObject ()
+    {
+        switch (Type)
+        {
+            case GridObjectType.Emitter:
+                gridObject = new Emitter ();
+                break;
+            case GridObjectType.Splitter:
+                gridObject = new Splitter ();
+                break;
         }
     }
 
     private void OnEnable ()
     {
+        gridObject.OnEnable ();
+
         if (movable)
             interactable.OnInteract += OnInteract;
     }
 
     private void OnDisable ()
     {
+        gridObject.OnDisable ();
+
         if (movable)
             interactable.OnInteract -= OnInteract;
         if (held) InputManager.Instance.OnEndTouch -= OnInteractEnd;

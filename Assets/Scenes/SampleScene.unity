@@ -209,8 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8975c831319b0b14ea115f4836ce857e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridObject:
+    gridPos: {x: 4, y: 4}
   Type: 1
-  movable: 0
+  movable: 1
 --- !u!114 &245814518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,7 +470,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 676127031}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.33, y: 0.04, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -514,8 +516,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8975c831319b0b14ea115f4836ce857e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridObject:
+    gridPos: {x: 3, y: 3}
   Type: 1
-  movable: 0
+  movable: 1
 --- !u!1 &909189578
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,8 +552,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8975c831319b0b14ea115f4836ce857e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 0
-  movable: 0
+  gridObject:
+    gridPos: {x: 2, y: 2}
+  Type: 1
+  movable: 1
 --- !u!114 &909189580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,7 +644,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 909189578}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.46, y: 0, z: 0}
+  m_LocalPosition: {x: -2.5, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -676,8 +682,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8975c831319b0b14ea115f4836ce857e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridObject:
+    gridPos: {x: 4, y: 3}
   Type: 1
-  movable: 0
+  movable: 1
 --- !u!114 &919203486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,7 +774,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919203484}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.75, y: -0, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -847,8 +855,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8975c831319b0b14ea115f4836ce857e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridObject:
+    gridPos: {x: 4, y: 2}
   Type: 1
-  movable: 0
+  movable: 1
 --- !u!114 &2073344460
 MonoBehaviour:
   m_ObjectHideFlags: 0

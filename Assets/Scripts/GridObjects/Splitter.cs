@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
+[System.Serializable]
 public class Splitter : GridObject
 {
     public override GridObjectType Type => GridObjectType.Splitter;

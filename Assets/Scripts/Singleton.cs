@@ -11,13 +11,21 @@ public class Singleton<T> : MonoBehaviour where T : Component
         {
             if (instance == null)
             {
-                GameObject obj = new GameObject ();
-                obj.name = typeof (T).Name;
-                instance = obj.AddComponent<T> ();
+                T foundInstance = FindObjectOfType<T> ();
+                if (foundInstance != null)
+                    instance = foundInstance;
+                else
+                {
+                    GameObject obj = new GameObject ();
+                    obj.name = typeof (T).Name;
+                    instance = obj.AddComponent<T> ();
+                }
             }
             return instance;
         }
     }
+
+    public static T CurrentInstance => instance;
 
     protected void SetInstance (T instance) => Singleton<T>.instance = instance;
     protected void TrySetInstance (T instance) { if (Singleton<T>.instance != null) Singleton<T>.instance = instance;}
@@ -49,15 +57,23 @@ public class SingletonPersistent<T> : MonoBehaviour where T : Component
                 Debug.Log (typeof (T).Name);
                 SceneManager.SetActiveScene (SceneManager.GetSceneByName (InstantiatePersistentScene.PersistentSceneName));
 
-                GameObject obj = new GameObject ();
-                obj.name = typeof (T).Name;
-                instance = obj.AddComponent<T> ();
+                T foundInstance = FindObjectOfType<T> ();
+                if (foundInstance != null)
+                    instance = foundInstance;
+                else
+                {
+                    GameObject obj = new GameObject ();
+                    obj.name = typeof (T).Name;
+                    instance = obj.AddComponent<T> ();
+                }
 
                 SceneManager.SetActiveScene (activeScene);
             }
             return instance;
         }
     }
+
+    public static T CurrentInstance => instance;
 
     private void OnDestroy ()
     {

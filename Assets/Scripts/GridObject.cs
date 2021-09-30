@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [System.Serializable]
-public abstract class GridObject
+public class GridObject
 {
-    public abstract GridObjectType Type { get; }
+    public virtual GridObjectType Type { get; }
 
     [SerializeField]
     private Vector2Int gridPos;
@@ -16,6 +16,9 @@ public abstract class GridObject
     public void SetPosition (int x, int y) => gridPos = new Vector2Int (x, y);
 
     public void SetPosition (Vector2Int position) => gridPos = position;
+
+    public virtual void OnEnable () { }
+    public virtual void OnDisable () { }
 }
 
 public enum GridObjectType
