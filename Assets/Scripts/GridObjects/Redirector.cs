@@ -9,7 +9,11 @@ public class Redirector : GridObject.MultiInput
     [SerializeField]
     private int outputDirection;
 
-
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        SetRotation (outputDirection);
+    }
     protected override BeamRadial GenerateOutputBeams(List<LightBeam> input)
     {
         BeamRadial output = new BeamRadial();
@@ -17,6 +21,7 @@ public class Redirector : GridObject.MultiInput
         foreach (LightBeam beam in input)
         {
             output[outputDirection] += beam;
+
         }
 
 
