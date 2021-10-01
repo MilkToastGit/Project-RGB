@@ -168,7 +168,35 @@ public class IsoGrid : Singleton<IsoGrid>
         return new Vector2Int (x, y);
     }
 
-    public Vector2 SnapToGrid (Vector2 position, bool restrainToWorkingArea = true) { return GridToWorld (WorldToGrid (position, restrainToWorkingArea)); }
+    public Vector2 SnapToGrid (Vector2 position, bool restrainToWorkingArea = true) 
+    {
+        Vector2Int nearestToPosition = WorldToGrid (position);
+
+        //Get nearest avaialable if 
+        if (GetAt (nearestToPosition) != null)
+        {
+            for (int y = 0; y < nearestToPosition.y + 1; y++)
+            {
+                float closestDistance = -1;
+                Vector2Int closestPoint;
+                for (int x = 0; x < nearestToPosition.x; x++)
+                {
+                    if (x == nearestToPosition.x || y == nearestToPosition.y) continue;
+
+                    Vector2 displacement = position - GridToWorld (x, y);
+                    float sqrDistance = Mathf.Pow (displacement.x, 2) + Mathf.Pow (displacement.y, 2);
+                    if (closestDistance > 0 && sqrDistance < closestDistance)
+                    {
+                        closestDistance = sqrDistance;
+                        closestPoint = new Vector2Int (x, y);
+                    }
+                }
+            }
+
+            //nearestToPosition
+        }
+        return GridToWorld (WorldToGrid (position, restrainToWorkingArea)); 
+    }
 
     private Vector2Int TranslatePoint (Vector2Int origin, int direction) { return TranslatePoint (origin.x, origin.y, direction); }
     private Vector2Int TranslatePoint (int xOrigin, int yOrigin, int direction)
