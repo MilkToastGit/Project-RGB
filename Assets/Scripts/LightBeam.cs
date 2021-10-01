@@ -42,12 +42,25 @@ public class LightBeam
         this.b = b > 0;
     }
 
-    public void Cast (Vector2Int origin, int direction)
+    public LightBeam (LightBeam beam)
+    {
+        r = beam.r;
+        g = beam.g;
+        b = beam.b;
+
+        origin = beam.origin;
+        termination = beam.termination;
+        direction = beam.direction;
+    }
+
+    public LightBeam Cast (Vector2Int origin, int direction)
     {
         this.direction = direction;
         this.origin = origin;
         termination = IsoGrid.Instance.CastBeam (this);
         BeamRenderer.Instance.BufferBeam (this);
+
+        return this;
     }
 
     public LightBeam[] GetComponents ()
@@ -64,6 +77,9 @@ public class LightBeam
 
     public static LightBeam operator + (LightBeam beam1, LightBeam beam2)
     {
+        if (beam1 == null) return beam2;
+        if (beam2 == null) return beam1;
+
         if (beam2.r) beam1.r = true;
         if (beam2.g) beam1.g = true;
         if (beam2.b) beam1.b = true;
