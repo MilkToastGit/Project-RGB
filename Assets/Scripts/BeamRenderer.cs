@@ -8,12 +8,15 @@ public class BeamRenderer : Singleton<BeamRenderer>
 
     [SerializeField]
     private GameObject rendererPrefab;
+    [SerializeField]
+    private int poolSize;
+
     private LineRenderer[] renderers;
     private int activeRenderer;
 
     private void Awake ()
     {
-        AttachRenderers (20);
+        AttachRenderers (poolSize);
     }
 
     public void BufferBeam (LightBeam beam)
@@ -31,21 +34,20 @@ public class BeamRenderer : Singleton<BeamRenderer>
             renderers[i] = Instantiate (rendererPrefab, transform).GetComponent<LineRenderer> ();
     }
 
-    private void RenderBeams ()
+    public void Render ()
     {
         UnrenderBeams ();
 
         foreach (LightBeam beam in buffer)
         {
-            LineRenderer line = renderers[activeRenderer++];
+            print ($"Rendering Beam of Colour {beam.Color}, starting at {beam.Origin}");
+            LineRenderer line = renderers[activeRenderer];
             line.enabled = true;
             line.SetPositions (beam.Positions);
             line.startColor = beam.Color;
             line.endColor = beam.Color;
 
-            buffer.Remove (beam);
-
-            if (++activeRenderer > renderers.Length - 1)
+            if (++activeRenderer >= renderers.Length)
                 throw new System.Exception ("All line renderers used up, try increasing pool size");
         }
 
@@ -54,7 +56,10 @@ public class BeamRenderer : Singleton<BeamRenderer>
 
     private void UnrenderBeams ()
     {
-        for (; activeRenderer >= 0; activeRenderer--)
+        for (; activeRenderer > 0; activeRenderer--)
+        {
+            print ($"Unrendering line {activeRenderer}");
             renderers[activeRenderer].enabled = false;
+        }
     }
 }

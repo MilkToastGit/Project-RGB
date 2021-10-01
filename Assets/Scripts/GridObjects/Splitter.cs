@@ -1,26 +1,41 @@
-using UnityEngine;
-using UnityEditor;
+using System.Collections.Generic;
 
 [System.Serializable]
-public class Splitter : GridObject
+public class Splitter : GridObject.MultiInput
 {
     public override GridObjectType Type => GridObjectType.Splitter;
 
-    public override void ReceiveBeam (LightBeam beam)
+    protected override BeamRadial GenerateOutputBeams (List<LightBeam> input)
     {
-        LightBeam[] components = beam.GetComponents ();
-        if (components.Length == 1)
-            components = new LightBeam[] { components[0], components[0] };
+        BeamRadial output = new BeamRadial ();
 
-        if (components.Length == 2)
+        foreach (LightBeam beam in input)
         {
-            components[0].Cast (GridPosition, beam.Direction - 1);
-            components[1].Cast (GridPosition, beam.Direction + 1);
+            print ($"Splitting beam with {beam.ComponentCount} components");
+            LightBeam[] components = beam.GetComponents ();
+            if (components.Length == 1)
+            {
+                components = new LightBeam[] { components[0], new LightBeam (components[0]) };
+                print ($"Bifurcating beam of colour {beam.Color}");
+            }
+
+            if (components.Length == 2)
+            {
+                print ($"Splitting beam of colour {beam.Color} into {components[0].Color} and {components[1].Color}");
+                output[beam.Direction - 1] += components[0];
+                output[beam.Direction + 1] += components[1];
+            }
+            else if (components.Length == 3)
+            {
+                print ($"Splitting beam of colour {beam.Color} into {components[0].Color}, {components[1].Color} and {components[2].Color}");
+                for (int i = 0; i < 3; i++)
+                {
+                    output[beam.Direction + i - 1] += components[i];
+                    print ($"Output direction: {beam.Direction + i - 1}");
+                }
+            }
         }
-        else if (components.Length == 3)
-        {
-            for (int i = 0; i < 3; i++)
-                components[i].Cast (GridPosition, beam.Direction + i - 1);
-        }
+
+        return output;
     }
 }

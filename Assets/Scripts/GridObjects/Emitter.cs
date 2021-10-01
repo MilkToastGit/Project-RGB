@@ -13,13 +13,13 @@ public class Emitter : GridObject
         beam.Cast (GridPosition, direction);
     }
 
-    public override void OnManagersLoaded ()
+    protected override void OnManagersLoaded ()
     {
         base.OnManagersLoaded ();
         EventManager.Instance.OnGridObjectMoved += EmitBeam;
     }
 
-    public override void OnDisable ()
+    protected override void OnDisable ()
     {
         base.OnDisable ();
         EventManager.Instance.OnGridObjectMoved -= EmitBeam;

@@ -3,24 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class GridObject : MonoBehaviour
+public abstract class GridObject : MonoBehaviour
 {
-    public virtual GridObjectType Type { get; }
-    protected virtual bool isMultiInput => false;
+    public abstract GridObjectType Type { get; }
 
     [SerializeField]
     [HideInInspector]
     private Vector2Int gridPos;
     [SerializeField]
     private bool movable = false;
+    protected BeamRadial outputBeams = new BeamRadial ();
 
     public Vector2Int GridPosition => gridPos;
 
-    protected List<LightBeam> inputBuffer;
     private Interactable interactable;
     private bool held = false;
 
-    public virtual void ReceiveBeam (LightBeam beam) { if (isMultiInput) inputBuffer.Add (beam); }
+    public virtual void ReceiveBeam (LightBeam beam) { }
 
     public void SetPosition (int x, int y) => gridPos = new Vector2Int (x, y);
 
@@ -31,8 +30,31 @@ public class GridObject : MonoBehaviour
     {
         if (movable)
             interactable = GetComponent<Interactable> ();
-        if (isMultiInput)
-            inputBuffer = new List<LightBeam> ();
+    }
+
+    [ExecuteInEditMode]
+    private void Update ()
+    {
+        if (held)
+        {
+            transform.position = InputManager.Instance.WorldTouchPosition;
+        }
+        SnapToGrid ();
+    }
+
+    protected virtual void OnEnable ()
+    {
+        InstantiatePersistentScene.OnManagersLoaded += OnManagersLoaded;
+
+        if (movable)
+            interactable.OnInteract += OnInteract;
+    }
+
+    protected virtual void OnDisable ()
+    {
+        if (movable)
+            interactable.OnInteract -= OnInteract;
+        if (held) InputManager.Instance.OnEndTouch -= OnInteractEnd;
     }
 
     private void OnInteract (Vector2 touchPos)
@@ -47,16 +69,6 @@ public class GridObject : MonoBehaviour
         InputManager.Instance.OnEndTouch -= OnInteractEnd;
     }
 
-    [ExecuteInEditMode]
-    private void Update ()
-    {
-        if (held)
-        {
-            transform.position = InputManager.Instance.WorldTouchPosition;
-        }
-        SnapToGrid ();
-    }
-
     public void SnapToGrid ()
     {
         Vector2Int newPos = IsoGrid.Instance.WorldToGrid (transform.position, false);
@@ -66,21 +78,44 @@ public class GridObject : MonoBehaviour
         transform.position = IsoGrid.Instance.GridToWorld (GridPosition);
     }
 
-    public virtual void OnEnable ()
+    protected virtual void OnManagersLoaded () { }
+
+    public abstract class MultiInput : GridObject
     {
-        InstantiatePersistentScene.OnManagersLoaded += OnManagersLoaded;
+        private List<LightBeam> inputBuffer = new List<LightBeam> ();
 
-        if (movable)
-            interactable.OnInteract += OnInteract;
-    }
+        public override void ReceiveBeam (LightBeam beam)
+        {
+            if (inputBuffer.Count == 0)
+                EventManager.Instance.OnAllBeamsTerminated += CastBeams;
 
-    public virtual void OnManagersLoaded () { }
+            inputBuffer.Add (beam);
+            print ($"input count: {inputBuffer.Count}");
+        }
 
-    public virtual void OnDisable ()
-    {
-        if (movable)
-            interactable.OnInteract -= OnInteract;
-        if (held) InputManager.Instance.OnEndTouch -= OnInteractEnd;
+        private void CastBeams ()
+        {
+            BeamRadial output = GenerateOutputBeams (inputBuffer);
+            print ($"Casting {output.Count} beams");
+
+            for (int dir = 0; dir < 8; dir++)
+            {
+                if (outputBeams[dir] != output[dir])
+                    output[dir]?.Cast (GridPosition, dir);
+            }
+
+            EventManager.Instance.OnAllBeamsTerminated -= CastBeams;
+            outputBeams = output;
+        }
+
+        private void ResetInputBuffer () => inputBuffer.Clear ();
+
+        protected abstract BeamRadial GenerateOutputBeams (List<LightBeam> input);
+
+        protected override void OnManagersLoaded ()
+        {
+            EventManager.Instance.OnAllBeamsRendered += ResetInputBuffer;
+        }
     }
 }
 

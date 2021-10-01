@@ -9,4 +9,7 @@ public class EventManager : SingletonPersistent<EventManager>
     public event Action OnAllBeamsTerminated;
     public void AllBeamsTerminated () => OnAllBeamsTerminated?.Invoke ();
     public bool AllBeamsTerminatedHasListeners => OnAllBeamsTerminated != null;
+
+    public event Action OnAllBeamsRendered;
+    public void AllBeamsRendered () => OnAllBeamsRendered?.Invoke ();
 }
