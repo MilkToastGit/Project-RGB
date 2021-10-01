@@ -77,8 +77,8 @@ public class LightBeam
 
     public static LightBeam operator + (LightBeam beam1, LightBeam beam2)
     {
-        if (beam1 == null) return beam2;
-        if (beam2 == null) return beam1;
+        if (beam1 == null) return new LightBeam (beam2);
+        if (beam2 == null) return new LightBeam (beam1);
 
         if (beam2.r) beam1.r = true;
         if (beam2.g) beam1.g = true;

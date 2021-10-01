@@ -13,6 +13,7 @@ public abstract class GridObject : MonoBehaviour
     [SerializeField]
     private bool movable = false;
     protected BeamRadial outputBeams = new BeamRadial ();
+    private SpriteRenderer sprite;
 
     public Vector2Int GridPosition => gridPos;
 
@@ -24,6 +25,8 @@ public abstract class GridObject : MonoBehaviour
     public void SetPosition (int x, int y) => gridPos = new Vector2Int (x, y);
 
     public void SetPosition (Vector2Int position) => gridPos = position;
+
+    protected void SetRotation (int direction) => transform.rotation = Tools.IntToRot(direction);
 
 
     private void Awake ()
@@ -122,5 +125,7 @@ public abstract class GridObject : MonoBehaviour
 public enum GridObjectType
 {
     Emitter,
-    Splitter
+    Splitter,
+    Redirector,
+    Node
 }
