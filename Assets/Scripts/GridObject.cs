@@ -122,5 +122,6 @@ public abstract class GridObject : MonoBehaviour
 public enum GridObjectType
 {
     Emitter,
-    Splitter
+    Splitter,
+    Redirector
 }

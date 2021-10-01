@@ -10,6 +10,7 @@ public class Emitter : GridObject
 
     private void EmitBeam ()
     {
+        UnityEngine.Debug.Log("EMITTING");
         beam.Cast (GridPosition, direction);
     }
 
