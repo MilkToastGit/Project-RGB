@@ -80,13 +80,22 @@ public class IsoGrid : Singleton<IsoGrid>
     private void PropagateBeams ()
     {
         print ("Beginning Propagation");
+        print ("Step One");
 
         // Step 1
         EventManager.Instance.GridObjectMoved ();
         
+        print ("Step Two");
         // Step 2
         for (int i = 0; i < maxPropagationSteps && EventManager.Instance.AllBeamsTerminatedHasListeners; i++)
+        {
+            print ($"Propagating step {i}, remaining listeners? {EventManager.Instance.AllBeamsTerminatedHasListeners}");
             EventManager.Instance.AllBeamsTerminated ();
+        }
+
+        print ("Rendering");
+        BeamRenderer.Instance.Render ();
+        EventManager.Instance.AllBeamsRendered ();
 
         print ("Propagation Complete");
     }
@@ -125,7 +134,7 @@ public class IsoGrid : Singleton<IsoGrid>
         if (GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint))
             GetAt (hitPoint)?.ReceiveBeam (beam);
 
-        Debug.DrawLine (GridToWorld (beam.Origin.x, beam.Origin.y), GridToWorld (hitPoint), beam.Color, 0.5f);
+        //Debug.DrawLine (GridToWorld (beam.Origin.x, beam.Origin.y), GridToWorld (hitPoint), beam.Color, 0.5f);
         Debug.Log ("End " + beam.Color);
         return hitPoint;
     }
