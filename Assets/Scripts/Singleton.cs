@@ -53,9 +53,10 @@ public class SingletonPersistent<T> : MonoBehaviour where T : Component
         {
             if (instance == null)
             {
+                //if (!ManagerLoader.loaded) return null;
+
                 Scene activeScene = SceneManager.GetActiveScene ();
-                Debug.Log (typeof (T).Name);
-                SceneManager.SetActiveScene (SceneManager.GetSceneByName (InstantiatePersistentScene.PersistentSceneName));
+                SceneManager.SetActiveScene (SceneManager.GetSceneByName (ManagerLoader.PersistentSceneName));
 
                 T foundInstance = FindObjectOfType<T> ();
                 if (foundInstance != null)

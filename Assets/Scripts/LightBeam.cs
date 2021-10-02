@@ -23,8 +23,8 @@ public class LightBeam
     public Vector2Int Termination => termination;
     public int Direction => direction;
     public Vector3[] Positions => new Vector3[] {
-        IsoGrid.Instance.GridToWorld (origin).ToVector3 (), 
-        IsoGrid.Instance.GridToWorld (termination).ToVector3 () };
+        GridManager.Instance.GridToWorld (origin).ToVector3 (), 
+        GridManager.Instance.GridToWorld (termination).ToVector3 () };
 
     public int ComponentCount => (r?1:0) + (g?1:0) + (b?1:0);
 
@@ -57,7 +57,7 @@ public class LightBeam
     {
         this.direction = direction;
         this.origin = origin;
-        termination = IsoGrid.Instance.CastBeam (this);
+        termination = GridManager.Instance.CastBeam (this);
         BeamRenderer.Instance.BufferBeam (this);
 
         return this;

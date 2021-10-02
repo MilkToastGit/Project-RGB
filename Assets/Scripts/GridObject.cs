@@ -35,19 +35,24 @@ public abstract class GridObject : MonoBehaviour
             interactable = GetComponent<Interactable> ();
     }
 
-    [ExecuteInEditMode]
+    private void OnDrawGizmos ()
+    {
+        SnapToGrid ();
+    }
+
+    //[ExecuteInEditMode]
     private void Update ()
     {
         if (held)
         {
             transform.position = InputManager.Instance.WorldTouchPosition;
+            SnapToGrid ();
         }
-        SnapToGrid ();
     }
 
     protected virtual void OnEnable ()
     {
-        InstantiatePersistentScene.OnManagersLoaded += OnManagersLoaded;
+        ManagerLoader.OnManagersLoaded += OnManagersLoaded;
 
         if (movable)
             interactable.OnInteract += OnInteract;
@@ -74,11 +79,7 @@ public abstract class GridObject : MonoBehaviour
 
     public void SnapToGrid ()
     {
-        Vector2Int newPos = IsoGrid.Instance.WorldToGrid (transform.position, false);
-        if (gridPos != newPos)
-            IsoGrid.Instance.Reallocate (this, newPos);
-
-        transform.position = IsoGrid.Instance.GridToWorld (GridPosition);
+        GridManager.Instance.SnapToGrid (this, transform.position);
     }
 
     protected virtual void OnManagersLoaded () { }

@@ -26,5 +26,10 @@ public static class Tools
         return Quaternion.Euler(0, 0, z);
     }
 
+    public static float GetSqrDist (Vector2 point1, Vector2 point2)
+    {
+        Vector2 displacement = point1 - point2;
+        return Mathf.Pow (displacement.x, 2) + Mathf.Pow (displacement.y, 2);
+    }
     //public static T GetAt<T> (this T[,] multiArray, Vector2Int index) => multiArray[index.x, index.y];
 }
