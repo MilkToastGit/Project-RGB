@@ -28,24 +28,24 @@ public class GridManager : Singleton<GridManager>
     {
         GenerateGrid ();
         if (ManagerLoader.loaded)
-            SubscribeToEvents ();
+            OnManagersLoaded ();
         else
-            ManagerLoader.OnManagersLoaded += SubscribeToEvents;
+            ManagerLoader.OnManagersLoaded += OnManagersLoaded;
     }
 
-    private void SubscribeToEvents ()
+    private void OnManagersLoaded ()
     {
-        ManagerLoader.OnManagersLoaded -= SubscribeToEvents;
+        ManagerLoader.OnManagersLoaded -= OnManagersLoaded;
+        EventManager.Instance.OnGridObjectMoved += PropagateBeams;
+    }
+
+    private void Start ()
+    {
+        EventManager.Instance.GridObjectMoved ();
     }
 
     private void PropagateBeams ()
     {
-        print ("Beginning Propagation");
-        print ("Step One");
-
-        // Step 1
-        EventManager.Instance.GridObjectMoved ();
-        
         print ("Step Two");
         // Step 2
         for (int i = 0; i < maxPropagationSteps && EventManager.Instance.AllBeamsTerminatedHasListeners; i++)
@@ -63,13 +63,13 @@ public class GridManager : Singleton<GridManager>
 
     public Vector2Int CastBeam (LightBeam beam)
     {
-        Debug.Log ("Start " + beam.Color);
+        Debug.Log ("Start " + beam.Colour);
         if (beam.Origin == null) throw new System.Exception ("Cannot cast beam with no origin.");
 
         if (grid.GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint))
             grid[hitPoint]?.ReceiveBeam (beam);
 
-        Debug.Log ("End " + beam.Color);
+        Debug.Log ("End " + beam.Colour);
         return hitPoint;
     }
 
@@ -80,9 +80,15 @@ public class GridManager : Singleton<GridManager>
 
     public void SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorkingArea = true)
     {
-        if (grid.SnapToGrid (obj, position, restrainToWorkingArea))
-            PropagateBeams ();
+        grid.SnapToGrid (obj, position, restrainToWorkingArea);
     }
+
+    public Vector2 SnapToGrid (Vector2 position, bool restrainToWorkingArea = true)
+    {
+        return grid.GridToWorld (grid.WorldToGrid (position, restrainToWorkingArea));
+    }
+
+    public void MoveObject (GridObject obj, Vector2Int destination) => grid.MoveObject (obj, destination);
 }
 
 [System.Serializable]
@@ -155,13 +161,11 @@ public class IsoGrid
         return false;
     }
 
-    private void MoveObject (GridObject obj, Vector2Int destination)
+    public void MoveObject (GridObject obj, Vector2Int destination)
     {
-        if (obj.GridPosition == destination)
-        {
-            obj.transform.position = GridToWorld (destination);
-            return;
-        }
+        obj.transform.position = GridToWorld (destination);
+
+        if (obj.GridPosition == destination) return;
 
         grid[obj.GridPosition.x, obj.GridPosition.y] = null;
         grid[destination.x, destination.y] = obj;
@@ -170,7 +174,7 @@ public class IsoGrid
 
     public bool SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorkingArea = true)
     {
-        Vector2Int targetPoint = WorldToGrid (position);
+        Vector2Int targetPoint = WorldToGrid (position, restrainToWorkingArea);
         if (targetPoint == obj.GridPosition)
         {
             obj.transform.position = GridToWorld (targetPoint);
@@ -186,6 +190,7 @@ public class IsoGrid
         bool pointFound = false;
         float smallestDist = 0;
         Vector2Int foundPoint = Vector2Int.zero;
+        int yMin = Mathf.Max ((targetPoint.y - 1), 0);
         for (int y = Mathf.Max ((targetPoint.y - 1), 0); y < Mathf.Min (targetPoint.y + 1, gridSize.y - 1); y++)
         {
             for (int x = Mathf.Max ((targetPoint.x - 1), 0); x < Mathf.Min (targetPoint.x + 1, gridSize.x - 1); x++)

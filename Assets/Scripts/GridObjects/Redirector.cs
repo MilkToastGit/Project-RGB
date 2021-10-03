@@ -14,7 +14,13 @@ public class Redirector : GridObject.MultiInput
         base.OnEnable();
         SetRotation (outputDirection);
     }
-    protected override BeamRadial GenerateOutputBeams(List<LightBeam> input)
+
+    private void OnDrawGizmos ()
+    {
+        SetRotation (outputDirection);
+    }
+
+    protected override BeamRadial GenerateOutputBeams(BeamRadial input)
     {
         BeamRadial output = new BeamRadial();
 

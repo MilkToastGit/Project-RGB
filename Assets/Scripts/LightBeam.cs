@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
@@ -15,7 +16,7 @@ public class LightBeam
     private Vector2Int origin, termination;
     private int direction;
 
-    public Color Color => new Color ((r?1:0), (g?1:0), (b?1:0));
+    public Color Colour => new Color ((r?1:0), (g?1:0), (b?1:0));
     public bool R => r;
     public bool G => g;
     public bool B => b;
@@ -27,6 +28,11 @@ public class LightBeam
         GridManager.Instance.GridToWorld (termination).ToVector3 () };
 
     public int ComponentCount => (r?1:0) + (g?1:0) + (b?1:0);
+
+    public event Action<LightBeam> OnBeamCancelled;
+    public void CancelBeam () => OnBeamCancelled?.Invoke (this);
+
+    public bool SameColour (LightBeam other) => r == other.r && g == other.g && b == other.b;
 
     public LightBeam (bool r, bool g, bool b)
     {
@@ -73,6 +79,12 @@ public class LightBeam
         if (b) components[i++] = Blue;
 
         return components;
+    }
+
+    public LightBeam SetDirection (int direction)
+    {
+        this.direction = direction;
+        return this;
     }
 
     public static LightBeam operator + (LightBeam beam1, LightBeam beam2)

@@ -8,6 +8,8 @@ public class Emitter : GridObject
     public int direction;
     public LightBeam beam;
 
+    public override void ReceiveBeam (LightBeam beam) { }
+
     private void EmitBeam ()
     {
         UnityEngine.Debug.Log("EMITTING");
