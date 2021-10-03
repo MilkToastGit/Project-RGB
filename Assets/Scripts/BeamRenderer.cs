@@ -25,6 +25,27 @@ public class BeamRenderer : Singleton<BeamRenderer>
             throw new System.Exception ("Uncast beam cannot be buffered");
 
         buffer.Add (beam);
+        beam.OnBeamCancelled += OnBeamCancelled;
+    }
+
+    public void Render ()
+    {
+        UnrenderBeams ();
+
+        foreach (LightBeam beam in buffer)
+        {
+            print ($"Rendering Beam of Colour {beam.Colour}, starting at {beam.Origin}");
+            LineRenderer line = renderers[activeRenderer];
+            line.enabled = true;
+            line.SetPositions (beam.Positions);
+            line.startColor = beam.Colour;
+            line.endColor = beam.Colour;
+
+            if (++activeRenderer >= renderers.Length)
+                throw new System.Exception ("All line renderers used up, try increasing pool size");
+        }
+
+        buffer.Clear ();
     }
 
     private void AttachRenderers (int amount)
@@ -34,26 +55,6 @@ public class BeamRenderer : Singleton<BeamRenderer>
             renderers[i] = Instantiate (rendererPrefab, transform).GetComponent<LineRenderer> ();
     }
 
-    public void Render ()
-    {
-        UnrenderBeams ();
-
-        foreach (LightBeam beam in buffer)
-        {
-            print ($"Rendering Beam of Colour {beam.Color}, starting at {beam.Origin}");
-            LineRenderer line = renderers[activeRenderer];
-            line.enabled = true;
-            line.SetPositions (beam.Positions);
-            line.startColor = beam.Color;
-            line.endColor = beam.Color;
-
-            if (++activeRenderer >= renderers.Length)
-                throw new System.Exception ("All line renderers used up, try increasing pool size");
-        }
-
-        buffer.Clear ();
-    }
-
     private void UnrenderBeams ()
     {
         for (; activeRenderer > 0; activeRenderer--)
@@ -61,5 +62,11 @@ public class BeamRenderer : Singleton<BeamRenderer>
             print ($"Unrendering line {activeRenderer}");
             renderers[activeRenderer].enabled = false;
         }
+    }
+
+    private void OnBeamCancelled (LightBeam beam)
+    {
+        buffer.Remove (beam);
+        beam.OnBeamCancelled -= OnBeamCancelled;
     }
 }
