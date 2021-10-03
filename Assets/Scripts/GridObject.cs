@@ -147,7 +147,7 @@ public abstract class GridObject : MonoBehaviour
             interactable = GetComponent<Interactable> ();
     }
 
-    private void OnDrawGizmos () => SnapToGrid ();
+    protected void OnDrawGizmos () => SnapToGrid ();
 
     protected virtual void OnEnable ()
     {

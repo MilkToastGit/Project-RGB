@@ -15,8 +15,9 @@ public class Redirector : GridObject.MultiInput
         SetRotation (outputDirection);
     }
 
-    private void OnDrawGizmos ()
+    protected void OnDrawGizmos ()
     {
+        base.OnDrawGizmos ();
         SetRotation (outputDirection);
     }
 
