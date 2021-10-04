@@ -77,6 +77,11 @@ public class BeamRadial : IEnumerable<LightBeam>
         }
     }
 
+    public bool Contains (LightBeam checkBeam)
+    {
+        return beams[checkBeam.Direction] == null ? false : beams[checkBeam.Direction].SameColour (checkBeam);
+    }
+
     public IEnumerator<LightBeam> GetEnumerator ()
     {
         foreach (LightBeam beam in beams)

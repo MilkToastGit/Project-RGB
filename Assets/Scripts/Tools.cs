@@ -26,6 +26,12 @@ public static class Tools
         return Quaternion.Euler(0, 0, z);
     }
 
+    public static int RotToInt (float degrees, bool convertFromRad = false)
+    {
+        if (convertFromRad) degrees *= Mathf.Rad2Deg;
+        return Wrap (Mathf.RoundToInt (degrees / 45), 8);
+    }
+
     public static float GetSqrDist (Vector2 point1, Vector2 point2)
     {
         Vector2 displacement = point1 - point2;
