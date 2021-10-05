@@ -37,10 +37,8 @@ public class GridManager : Singleton<GridManager>
     {
         ManagerLoader.OnManagersLoaded -= OnManagersLoaded;
         EventManager.Instance.OnGridObjectMoved += PropagateBeams;
-    }
-
-    private void Start ()
-    {
+        print (grid[12, 6]);
+        print (grid[7, 11]);
         EventManager.Instance.GridObjectMoved ();
     }
 
@@ -76,16 +74,16 @@ public class GridManager : Singleton<GridManager>
     public Vector2 GridToWorld (Vector2Int point) => grid.GridToWorld (point);
     public Vector2 GridToWorld (int x, int y) => grid.GridToWorld (x, y);
 
-    public Vector2Int WorldToGrid (Vector2 position, bool restrainToWorkingArea = true) => grid.WorldToGrid (position, restrainToWorkingArea);
+    public Vector2Int WorldToGrid (Vector2 position, bool restrainToWorking = true) => grid.WorldToGrid (position, restrainToWorking);
 
-    public void SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorkingArea = true)
+    public void SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorking = true)
     {
-        grid.SnapToGrid (obj, position, restrainToWorkingArea);
+        grid.SnapToGrid (obj, position, restrainToWorking);
     }
 
-    public Vector2 SnapToGrid (Vector2 position, bool restrainToWorkingArea = true)
+    public Vector2 SnapToGrid (Vector2 position, Vector2Int originalPosition, bool restrainToWorking = true)
     {
-        return grid.GridToWorld (grid.WorldToGrid (position, restrainToWorkingArea));
+        return grid.GridToWorld (grid.NearestAvailablePoint (position, originalPosition, restrainToWorking));
     }
 
     public void MoveObject (GridObject obj, Vector2Int destination) => grid.MoveObject (obj, destination);
@@ -95,13 +93,19 @@ public class GridManager : Singleton<GridManager>
 public class IsoGrid
 {
     [SerializeField] private GridObject[,] grid;
-    [SerializeField] private Vector2Int gridSize, workingArea;
+    [SerializeField] private Vector2Int gridSize, workingArea, workingMin, workingMax;
     [SerializeField] private Vector2 worldSize, spacing;
 
     public GridObject this[Vector2Int i]
     {
         get { return grid[i.x, i.y]; }
         set { grid[i.x, i.y] = value; }
+    }
+
+    public GridObject this[int x, int y]
+    {
+        get { return grid[x, y]; }
+        set { grid[x, y] = value; }
     }
 
     public IsoGrid (Vector2Int size, Vector2 spacing, Vector2Int workingArea, GridObject[] gridObjects = null)
@@ -113,12 +117,21 @@ public class IsoGrid
         worldSize.x = (size.x - 1) * this.spacing.x;
         worldSize.y = (size.y - 1) * this.spacing.y;
 
+        Vector2Int halfGridSize = new Vector2Int (Mathf.FloorToInt (size.x / 2), Mathf.FloorToInt (size.y / 2)); // 3, 2
+        Vector2Int halfWorkSize = new Vector2Int (Mathf.FloorToInt (workingArea.x / 2), Mathf.FloorToInt (workingArea.y / 2)); // 1, 1
+        workingMin = halfGridSize - halfWorkSize;
+        workingMax = halfGridSize + halfWorkSize;
+
         if (gridObjects != null)
         {
             foreach (GridObject obj in gridObjects)
             {
+                Debug.Log ($"({obj.GridPosition}) {obj.name}");
                 if (obj != null)
+                {
+                    obj.SetPosition (WorldToGrid (obj.transform.position, false));
                     grid[obj.GridPosition.x, obj.GridPosition.y] = obj;
+                }
             }
         }
 
@@ -172,9 +185,9 @@ public class IsoGrid
         obj.SetPosition (destination);
     }
 
-    public bool SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorkingArea = true)
+    public bool SnapToGrid (GridObject obj, Vector2 position, bool restrainToWorking = true)
     {
-        Vector2Int targetPoint = WorldToGrid (position, restrainToWorkingArea);
+        Vector2Int targetPoint = WorldToGrid (position, restrainToWorking);
         if (targetPoint == obj.GridPosition)
         {
             obj.transform.position = GridToWorld (targetPoint);
@@ -218,6 +231,41 @@ public class IsoGrid
             obj.transform.position = GridToWorld (obj.GridPosition);
             return false;
         }
+    }
+
+    public Vector2Int NearestAvailablePoint (Vector2 position, Vector2Int originalPosition, bool restrainToWorking = true)
+    {
+        Vector2Int targetPoint = WorldToGrid (position, restrainToWorking);
+        if (targetPoint == originalPosition || this[targetPoint] == null)
+            return targetPoint;
+
+        Vector2Int min = new Vector2Int (
+            Mathf.Max (targetPoint.y - 1, restrainToWorking ? workingMin.y : 0),
+            Mathf.Max (targetPoint.x - 1, restrainToWorking ? workingMin.x : 0));
+        Vector2Int max = new Vector2Int (
+            Mathf.Min (targetPoint.y + 1, restrainToWorking ? workingMax.y : gridSize.y - 1),
+            Mathf.Min (targetPoint.x + 1, restrainToWorking ? workingMax.x : gridSize.x - 1));
+
+        Vector2Int foundPoint = originalPosition;
+        float smallestDist = Tools.GetSqrDist (position, GridToWorld (foundPoint));
+
+        for (int y = min.y; y < max.y; y++)
+        {
+            for (int x = min.x; x < max.x; x++)
+            {
+                if (targetPoint.SamePoint (x, y)) continue;
+
+                float sqrDistance = Tools.GetSqrDist (position, GridToWorld (x, y));
+                // If unoccupied and closest so far
+                if ((grid[x, y] == null || originalPosition.SamePoint (x, y)) && sqrDistance < smallestDist)
+                {
+                    smallestDist = sqrDistance;
+                    foundPoint = new Vector2Int (x, y);
+                }
+            }
+        }
+
+        return foundPoint;
     }
 
     private Vector2Int TranslatePoint (Vector2Int origin, int direction) { return TranslatePoint (origin.x, origin.y, direction); }

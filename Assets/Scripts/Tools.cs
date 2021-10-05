@@ -37,5 +37,7 @@ public static class Tools
         Vector2 displacement = point1 - point2;
         return Mathf.Pow (displacement.x, 2) + Mathf.Pow (displacement.y, 2);
     }
+
+    public static bool SamePoint (this Vector2Int point, int x, int y) => point.x == x && point.y == y;
     //public static T GetAt<T> (this T[,] multiArray, Vector2Int index) => multiArray[index.x, index.y];
 }

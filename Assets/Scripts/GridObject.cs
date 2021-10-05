@@ -184,7 +184,7 @@ public abstract class GridObject : MonoBehaviour
 
     protected virtual void DraggingUpdate ()
     {
-        ghost.transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition, true);
+        ghost.transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition, GridPosition, true);
     }
 
     protected virtual void LongPressedUpdate () => DraggingUpdate ();

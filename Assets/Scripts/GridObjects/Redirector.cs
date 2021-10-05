@@ -8,6 +8,7 @@ public class Redirector : GridObject.MultiInput
 {
     public override GridObjectType Type => GridObjectType.Redirector;
     [SerializeField] private bool rotatable;
+    [Range (0, 7)]
     [SerializeField] private int outputDirection;
 
     private int preRotateDirection;
