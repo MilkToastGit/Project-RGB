@@ -37,8 +37,6 @@ public class GridManager : Singleton<GridManager>
     {
         ManagerLoader.OnManagersLoaded -= OnManagersLoaded;
         EventManager.Instance.OnGridObjectMoved += PropagateBeams;
-        print (grid[12, 6]);
-        print (grid[7, 11]);
         EventManager.Instance.GridObjectMoved ();
     }
 
