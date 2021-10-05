@@ -21,7 +21,7 @@ public class TouchInteraction : MonoBehaviour
             foreach (Collider2D hit in hits)
             {
                 if (hit.TryGetComponent (out Interactable interact))
-                    interact.Interact (touchPos);
+                    interact.InteractStart (touchPos);
             }
         }
     }

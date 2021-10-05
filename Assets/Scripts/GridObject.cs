@@ -12,10 +12,8 @@ public abstract class GridObject : MonoBehaviour
 
     public Vector2Int GridPosition => gridPos;
 
+    protected Interactable interactable;
     private SpriteRenderer sprite;
-    private Interactable interactable;
-    private Vector2Int pickedUpPosition;
-    private bool held = false;
     private GameObject _ghost;
     private GameObject ghost 
     { 
@@ -76,6 +74,8 @@ public abstract class GridObject : MonoBehaviour
 
         public override void ReceiveBeam (LightBeam beam)
         {
+            if (inputBuffer.Contains (beam)) return;
+
             if (!outputBeams.isEmpty)
             {
                 foreach (LightBeam outBeam in outputBeams)
@@ -142,43 +142,56 @@ public abstract class GridObject : MonoBehaviour
     private void Awake ()
     {
         sprite = GetComponent<SpriteRenderer> ();
-
-        if (movable)
-            interactable = GetComponent<Interactable> ();
+        interactable = GetComponent<Interactable> ();
     }
 
-    protected void OnDrawGizmos () => SnapToGrid ();
+    protected virtual void OnDrawGizmos () => SnapToGrid ();
 
     protected virtual void OnEnable ()
     {
-        ManagerLoader.OnManagersLoaded += OnManagersLoaded;
+        if (ManagerLoader.loaded)
+            OnManagersLoaded ();
+        else
+            ManagerLoader.OnManagersLoaded += OnManagersLoaded;
 
         if (movable)
-            interactable.OnInteract += OnInteract;
+        {
+            interactable.OnDragStart += OnDragStart;
+            interactable.OnDragEnd += OnDragEnd;
+            interactable.OnPressDragStart += OnPressDragStart;
+            interactable.OnPressDragEnd += OnPressDragEnd;
+        }
     }
 
     protected virtual void OnDisable ()
     {
         if (movable)
-            interactable.OnInteract -= OnInteract;
-        if (held) InputManager.Instance.OnEndTouch -= OnInteractEnd;
+        {
+            interactable.OnDragStart -= OnDragStart;
+            interactable.OnDragEnd -= OnDragEnd;
+            interactable.OnPressDragStart -= OnPressDragStart;
+            interactable.OnPressDragEnd -= OnPressDragEnd;
+        }
     }
 
     private void Update ()
     {
-        if (held)
-            ghost.transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition, true);
+        if (movable && interactable.State == InteractState.Dragging)
+            DraggingUpdate ();
+        else if (interactable.State == InteractState.PressDragging)
+            LongPressedUpdate ();
     }
 
-    private void OnInteract (Vector2 touchPos)
+    protected virtual void DraggingUpdate ()
     {
-        ghost.SetActive (true);
-        pickedUpPosition = gridPos;
-        held = true;
-        InputManager.Instance.OnEndTouch += OnInteractEnd;
+        ghost.transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition, GridPosition, true);
     }
 
-    private void OnInteractEnd (Vector2 touchPos)
+    protected virtual void LongPressedUpdate () => DraggingUpdate ();
+
+    private void OnDragStart () => ghost.SetActive (true);
+
+    private void OnDragEnd ()
     {
         ghost.SetActive (false);
         Vector2Int ghostGridPoint = GridManager.Instance.WorldToGrid (ghost.transform.position, true);
@@ -187,10 +200,11 @@ public abstract class GridObject : MonoBehaviour
             GridManager.Instance.MoveObject (this, ghostGridPoint);
             EventManager.Instance.GridObjectMoved ();
         }
-        
-        held = false;
-        InputManager.Instance.OnEndTouch -= OnInteractEnd;
     }
+
+    protected virtual void OnPressDragStart () => OnDragStart ();
+
+    protected virtual void OnPressDragEnd () => OnDragEnd ();
 
     public void SnapToGrid ()
     {
