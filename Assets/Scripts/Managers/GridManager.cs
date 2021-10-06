@@ -19,6 +19,7 @@ public class GridManager : Singleton<GridManager>
     private IsoGrid grid;
 
     [ContextMenu ("GenerateGrid")]
+    [InitializeOnLoadMethod]
     private void GenerateGrid ()
     {
         grid = new IsoGrid (gridSize, gridSpacing, workingArea, GetComponentsInChildren<GridObject> ());
@@ -57,13 +58,16 @@ public class GridManager : Singleton<GridManager>
         print ("Propagation Complete");
     }
 
-    public Vector2Int CastBeam (LightBeam beam)
+    public Vector2Int CastBeam (LightBeam beam, out bool hitWall, out Vector2 wallHitPoint)
     {
         Debug.Log ("Start " + beam.Colour);
         if (beam.Origin == null) throw new System.Exception ("Cannot cast beam with no origin.");
 
-        if (grid.GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint))
-            grid[hitPoint]?.ReceiveBeam (beam);
+        if (grid.GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint, out hitWall, out wallHitPoint))
+        {
+            if (!hitWall)
+                grid[hitPoint]?.ReceiveBeam (beam);
+        }
 
         Debug.Log ("End " + beam.Colour);
         return hitPoint;
@@ -91,7 +95,7 @@ public class GridManager : Singleton<GridManager>
 public class IsoGrid
 {
     [SerializeField] private GridObject[,] grid;
-    [SerializeField] private Vector2Int gridSize, workingArea, workingMin, workingMax;
+    [SerializeField] private Vector2Int gridSize, workingMin, workingMax;
     [SerializeField] private Vector2 worldSize, spacing;
 
     public GridObject this[Vector2Int i]
@@ -111,7 +115,6 @@ public class IsoGrid
         grid = new GridObject[size.x, size.y];
         gridSize = size;
         this.spacing = spacing;
-        this.workingArea = workingArea;
         worldSize.x = (size.x - 1) * this.spacing.x;
         worldSize.y = (size.y - 1) * this.spacing.y;
 
@@ -147,11 +150,40 @@ public class IsoGrid
         }
     }
 
-    public bool GridCast (Vector2Int origin, int direction, out Vector2Int hitPoint)
+    public bool GridCast (Vector2Int origin, int direction, out Vector2Int hitPoint, out bool hitWall, out Vector2 wallHitPoint)
     {
         Vector2Int lastPoint = origin;
+        hitWall = false;
+        wallHitPoint = Vector2.zero;
         for (int i = 0; i < Mathf.Max (gridSize.x, gridSize.y); i++)
         {
+            // If cardinal
+            if (direction % 2 == 0)
+            {
+                Debug.Log ("Line is Cardinal.");
+                // Check above and below line for wall
+                Vector2Int abovePoint = TranslatePoint (lastPoint, direction - 1);
+                Vector2Int belowPoint = TranslatePoint (lastPoint, direction + 1);
+                if (abovePoint.isBetween (Vector2Int.zero, gridSize - Vector2Int.one) &&
+                    belowPoint.isBetween (Vector2Int.zero, gridSize - Vector2Int.one) &&
+                    this[abovePoint] != null && this[abovePoint].Type == GridObjectType.Wall &&
+                    this[belowPoint] != null && this[belowPoint].Type == GridObjectType.Wall)
+                {
+                    Debug.Log ("Line passes through walls. Checking if connected...");
+                    Wall above = this[abovePoint] as Wall;
+                    Wall below = this[belowPoint] as Wall;
+                    if (above.IsConnected (below))
+                    {
+                        Debug.Log ("Walls are connected. Colliding.");
+                        hitPoint = lastPoint;
+                        hitWall = true;
+                        wallHitPoint = (GridToWorld (abovePoint) + GridToWorld (belowPoint)) / 2;
+                        return true;
+                    }
+                    else Debug.Log ("Walls are NOT connected. Ignoring.");
+                }
+            }
+
             Vector2Int point = TranslatePoint (lastPoint, direction);
             if (!point.x.isBetween (0, gridSize.x - 1) || !point.y.isBetween (0, gridSize.y - 1))
             {
@@ -179,8 +211,8 @@ public class IsoGrid
 
         if (obj.GridPosition == destination) return;
 
-        grid[obj.GridPosition.x, obj.GridPosition.y] = null;
-        grid[destination.x, destination.y] = obj;
+        this[obj.GridPosition] = null;
+        this[destination] = obj;
         obj.SetPosition (destination);
     }
 
