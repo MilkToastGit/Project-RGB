@@ -5,6 +5,7 @@ public class Emitter : GridObject
 {
     public override GridObjectType Type => GridObjectType.Emitter;
 
+    [UnityEngine.Range (0, 7)]
     public int direction;
     public LightBeam beam;
 

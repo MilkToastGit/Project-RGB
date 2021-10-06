@@ -54,6 +54,7 @@ public class Redirector : GridObject.MultiInput
 
     protected override void OnPressDragStart ()
     {
+        print (outputDirection);
         if (!rotatable)
         {
             base.OnPressDragStart ();
@@ -70,7 +71,6 @@ public class Redirector : GridObject.MultiInput
             base.OnPressDragEnd ();
             return;
         }
-
         if (outputDirection != preRotateDirection)
             EventManager.Instance.GridObjectMoved ();
     }

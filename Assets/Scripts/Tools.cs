@@ -14,6 +14,11 @@ public static class Tools
         return value >= Mathf.Min (value1, value2) && value <= Mathf.Max (value1, value2);
     }
 
+    public static bool isBetween (this Vector2Int point, Vector2Int min, Vector2Int max)
+    {
+        return point.x.isBetween (min.x, max.x) && point.y.isBetween (min.y, max.y);
+    }
+
     public static int Wrap (int n, int m)
     {
         return n >= 0 ? n % m : (n % m + m) % m;

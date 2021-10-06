@@ -13,6 +13,8 @@ public class LightBeam
 
     [SerializeField]
     private bool r, g, b;
+    private bool hitWall = false;
+    private Vector2 wallHitTermination;
     private Vector2Int origin, termination;
     private int direction;
 
@@ -25,7 +27,7 @@ public class LightBeam
     public int Direction => direction;
     public Vector3[] Positions => new Vector3[] {
         GridManager.Instance.GridToWorld (origin).ToVector3 (), 
-        GridManager.Instance.GridToWorld (termination).ToVector3 () };
+        hitWall ? wallHitTermination.ToVector3 () : GridManager.Instance.GridToWorld (termination).ToVector3 () };
 
     public int ComponentCount => (r?1:0) + (g?1:0) + (b?1:0);
 
@@ -33,6 +35,13 @@ public class LightBeam
     public void CancelBeam () => OnBeamCancelled?.Invoke (this);
 
     public bool SameColour (LightBeam other) => r == other.r && g == other.g && b == other.b;
+
+    public LightBeam ()
+    {
+        r = false;
+        g = false;
+        b = false;
+    }
 
     public LightBeam (bool r, bool g, bool b)
     {
@@ -63,7 +72,7 @@ public class LightBeam
     {
         this.direction = direction;
         this.origin = origin;
-        termination = GridManager.Instance.CastBeam (this);
+        termination = GridManager.Instance.CastBeam (this, out hitWall, out wallHitTermination);
         BeamRenderer.Instance.BufferBeam (this);
 
         return this;
