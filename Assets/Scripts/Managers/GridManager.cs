@@ -119,6 +119,7 @@ public class IsoGrid
         Vector2Int halfWorkSize = new Vector2Int (Mathf.FloorToInt (workingArea.x / 2), Mathf.FloorToInt (workingArea.y / 2)); // 1, 1
         workingMin = halfGridSize - halfWorkSize;
         workingMax = halfGridSize + halfWorkSize;
+        Debug.Log (workingMax);
 
         if (gridObjects != null)
         {
@@ -325,9 +326,8 @@ public class IsoGrid
 
         if (restrainToWorkingArea)
         {
-            Vector2Int margin = new Vector2Int ((gridSize.x - workingArea.x) / 2, (gridSize.y - workingArea.y) / 2);
-            x = Mathf.Clamp (x, margin.x, gridSize.x - margin.x);
-            y = Mathf.Clamp (y, margin.y, gridSize.y - margin.y);
+            x = Mathf.Clamp (x, workingMin.x, workingMax.x);
+            y = Mathf.Clamp (y, workingMin.y, workingMax.y);
         }
         else
         {

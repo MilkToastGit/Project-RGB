@@ -74,13 +74,14 @@ public abstract class GridObject : MonoBehaviour
 
         public override void ReceiveBeam (LightBeam beam)
         {
-            if (inputBuffer.Contains (beam)) return;
+            if (inputBuffer.Contains (beam) /*|| outputBeams[beam.Direction + 4] != null*/) return;
 
             if (!outputBeams.isEmpty)
             {
+                print ($"{name} Contains Input? {inputBuffer.Contains (beam)}, Contains Output? {outputBeams[beam.Direction + 4] != null}");
                 foreach (LightBeam outBeam in outputBeams)
                     outBeam.CancelBeam ();
-                print ($"({this}) received new beam; cancelling outputs");
+                print ($"({name}) received new beam; cancelling outputs");
             }
 
             AwaitOutput ();
@@ -92,7 +93,7 @@ public abstract class GridObject : MonoBehaviour
         private void CastBeams ()
         {
             BeamRadial output = GenerateOutputBeams (inputBuffer);
-            print ($"Casting {output.Count} beams");
+            print ($"{name} casting {output.Count} beams");
 
             for (int dir = 0; dir < 8; dir++)
             {
@@ -158,9 +159,10 @@ public abstract class GridObject : MonoBehaviour
         {
             interactable.OnDragStart += OnDragStart;
             interactable.OnDragEnd += OnDragEnd;
-            interactable.OnPressDragStart += OnPressDragStart;
-            interactable.OnPressDragEnd += OnPressDragEnd;
         }
+
+        interactable.OnPressDragStart += OnPressDragStart;
+        interactable.OnPressDragEnd += OnPressDragEnd;
     }
 
     protected virtual void OnDisable ()
@@ -169,14 +171,15 @@ public abstract class GridObject : MonoBehaviour
         {
             interactable.OnDragStart -= OnDragStart;
             interactable.OnDragEnd -= OnDragEnd;
-            interactable.OnPressDragStart -= OnPressDragStart;
-            interactable.OnPressDragEnd -= OnPressDragEnd;
         }
+
+        interactable.OnPressDragStart -= OnPressDragStart;
+        interactable.OnPressDragEnd -= OnPressDragEnd;
     }
 
     private void Update ()
     {
-        if (movable && interactable.State == InteractState.Dragging)
+        if (interactable.State == InteractState.Dragging)
             DraggingUpdate ();
         else if (interactable.State == InteractState.PressDragging)
             LongPressedUpdate ();
@@ -184,15 +187,21 @@ public abstract class GridObject : MonoBehaviour
 
     protected virtual void DraggingUpdate ()
     {
+        if (!movable) return;
         ghost.transform.position = GridManager.Instance.SnapToGrid (InputManager.Instance.WorldTouchPosition, GridPosition, true);
     }
 
     protected virtual void LongPressedUpdate () => DraggingUpdate ();
 
-    private void OnDragStart () => ghost.SetActive (true);
+    private void OnDragStart ()
+    {
+        if (!movable) return;
+        ghost.SetActive (true);
+    }
 
     private void OnDragEnd ()
     {
+        if (!movable) return;
         ghost.SetActive (false);
         Vector2Int ghostGridPoint = GridManager.Instance.WorldToGrid (ghost.transform.position, true);
         if (gridPos != ghostGridPoint)
@@ -233,5 +242,6 @@ public enum GridObjectType
     Emitter,
     Splitter,
     Redirector,
-    Output
+    Output,
+    Wall
 }

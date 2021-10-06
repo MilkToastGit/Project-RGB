@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Beams
+    uniqueID: 3036148051
+    locked: 0
+  - name: Modules
+    uniqueID: 3849793491
+    locked: 0

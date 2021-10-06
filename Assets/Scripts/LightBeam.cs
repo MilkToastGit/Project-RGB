@@ -34,6 +34,13 @@ public class LightBeam
 
     public bool SameColour (LightBeam other) => r == other.r && g == other.g && b == other.b;
 
+    public LightBeam ()
+    {
+        r = false;
+        g = false;
+        b = false;
+    }
+
     public LightBeam (bool r, bool g, bool b)
     {
         this.r = r;
