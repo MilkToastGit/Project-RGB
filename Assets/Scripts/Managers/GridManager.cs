@@ -20,7 +20,7 @@ public class GridManager : Singleton<GridManager>
 
     [ContextMenu ("GenerateGrid")]
     [InitializeOnLoadMethod]
-    private void GenerateGrid ()
+    public void GenerateGrid ()
     {
         grid = new IsoGrid (gridSize, gridSpacing, workingArea, GetComponentsInChildren<GridObject> ());
     }
