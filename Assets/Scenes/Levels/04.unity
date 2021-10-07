@@ -608,7 +608,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -1567,6 +1567,22 @@ PrefabInstance:
     - target: {fileID: 591152866262301857, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
       propertyPath: m_Positions.Array.data[7].y
       value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 591152866262301857, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
+      propertyPath: m_Positions.Array.data[8].x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 591152866262301857, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
+      propertyPath: m_Positions.Array.data[8].y
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 591152866262301857, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
+      propertyPath: m_Positions.Array.data[9].x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 591152866262301857, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
+      propertyPath: m_Positions.Array.data[9].y
+      value: -0.75
       objectReference: {fileID: 0}
     - target: {fileID: 591152866262301860, guid: 515d69ee73e7f104181e07ca706d736b, type: 3}
       propertyPath: m_Name
