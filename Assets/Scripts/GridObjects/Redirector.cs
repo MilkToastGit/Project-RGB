@@ -61,6 +61,7 @@ public class Redirector : GridObject.MultiInput
             return;
         }
 
+        transform.localScale = Vector3.one * 1.5f;
         preRotateDirection = outputDirection;
     }
 
@@ -71,6 +72,8 @@ public class Redirector : GridObject.MultiInput
             base.OnPressDragEnd ();
             return;
         }
+
+        transform.localScale = Vector3.one;
         if (outputDirection != preRotateDirection)
             EventManager.Instance.GridObjectMoved ();
     }

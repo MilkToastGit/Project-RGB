@@ -143,6 +143,7 @@ public abstract class GridObject : MonoBehaviour
     private void Awake ()
     {
         sprite = GetComponent<SpriteRenderer> ();
+        sprite.color = movable ? Color.white : Color.grey;
         interactable = GetComponent<Interactable> ();
     }
 
