@@ -8,6 +8,8 @@ public class SceneChanger : MonoBehaviour
     //public string[] Levels;
     private int sceneToLoad;
 
+    public static bool firstLoad = true;
+
     public void ChangeScene(string sceneName)
     {
         LoadScene (SceneManager.GetSceneByName (sceneName).buildIndex);
@@ -29,7 +31,8 @@ public class SceneChanger : MonoBehaviour
 
     private void LoadScene (int buildIndex)
     {
-        print ($"Loading scene {buildIndex}");
+        firstLoad = false;
+        //print ($"Loading scene {buildIndex}");
         sceneToLoad = buildIndex;
         AsyncOperation async = SceneManager.UnloadSceneAsync (SceneManager.GetActiveScene ());
         async.completed += OnUnloadComplete;
@@ -47,7 +50,9 @@ public class SceneChanger : MonoBehaviour
 
     private void SetActive (AsyncOperation async)
     {
+        print ("Scene Loaded");
         async.completed -= SetActive;
         SceneManager.SetActiveScene (SceneManager.GetSceneByBuildIndex (sceneToLoad));
+        EventManager.Instance.SceneLoaded ();
     }
 }

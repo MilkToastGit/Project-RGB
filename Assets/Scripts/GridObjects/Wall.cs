@@ -17,7 +17,7 @@ public class Wall : GridObject
     //public bool IsConnected (Wall wall) => prevWall == wall || nextWall == wall;
     public bool IsConnected (Wall wall)
     {
-        print ($"prevWall match {prevWall == wall}, nextWall match {nextWall == wall}");
+        //print ($"prevWall match {prevWall == wall}, nextWall match {nextWall == wall}");
         return prevWall == wall || nextWall == wall;
     }
 

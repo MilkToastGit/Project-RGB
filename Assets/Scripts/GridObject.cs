@@ -44,7 +44,7 @@ public abstract class GridObject : MonoBehaviour
             BeamRadial output = GenerateOutputBeams (beam);
             beamIO.Add (beam, output);
 
-            print ($"Casting {output.Count} beams");
+            //print ($"Casting {output.Count} beams");
             foreach (LightBeam outputBeam in output)
                 outputBeam.Cast (GridPosition, outputBeam.Direction);
             
@@ -78,22 +78,22 @@ public abstract class GridObject : MonoBehaviour
 
             if (!outputBeams.isEmpty)
             {
-                print ($"{name} Contains Input? {inputBuffer.Contains (beam)}, Contains Output? {outputBeams[beam.Direction + 4] != null}");
+                //print ($"{name} Contains Input? {inputBuffer.Contains (beam)}, Contains Output? {outputBeams[beam.Direction + 4] != null}");
                 foreach (LightBeam outBeam in outputBeams)
                     outBeam.CancelBeam ();
-                print ($"({name}) received new beam; cancelling outputs");
+                //print ($"({name}) received new beam; cancelling outputs");
             }
 
             AwaitOutput ();
 
             inputBuffer.Add (beam);
-            print ($"input count: {inputBuffer.Count}");
+            //print ($"input count: {inputBuffer.Count}");
         }
 
         private void CastBeams ()
         {
             BeamRadial output = GenerateOutputBeams (inputBuffer);
-            print ($"{name} casting {output.Count} beams");
+            //print ($"{name} casting {output.Count} beams");
 
             for (int dir = 0; dir < 8; dir++)
             {

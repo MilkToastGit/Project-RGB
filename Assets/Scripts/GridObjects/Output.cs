@@ -37,7 +37,7 @@ public class Output : GridObject
         foreach (LightBeam beam in currentInput)
             combinedInput += beam;
 
-        print ($"combined input {combinedInput.Colour}");
+        //print ($"combined input {combinedInput.Colour}");
         innerBox.color = combinedInput.Colour;
         correct = combinedInput.SameColour (requiredBeam);
     }

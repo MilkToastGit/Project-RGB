@@ -35,7 +35,7 @@ public class BeamRenderer : Singleton<BeamRenderer>
 
         foreach (LightBeam beam in buffer)
         {
-            print ($"Rendering Beam of Colour {beam.Colour}, starting at {beam.Origin}");
+            //print ($"Rendering Beam of Colour {beam.Colour}, starting at {beam.Origin}");
             LineRenderer line = renderers[activeRenderer];
             line.enabled = true;
             line.SetPositions (beam.Positions);
@@ -54,14 +54,14 @@ public class BeamRenderer : Singleton<BeamRenderer>
         _renderers = new LineRenderer[amount];
         for (int i = 0; i < amount; i++)
             _renderers[i] = Instantiate (rendererPrefab, transform).GetComponent<LineRenderer> ();
-        print (_renderers.Length);
+        //print (_renderers.Length);
     }
 
     private void UnrenderBeams ()
     {
         for (; activeRenderer > 0; activeRenderer--)
         {
-            print ($"Unrendering line {activeRenderer}");
+            //print ($"Unrendering line {activeRenderer}");
             renderers[activeRenderer].enabled = false;
         }
     }
