@@ -5,21 +5,49 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
-    public string[] Levels;
-    private int currentLevelIndex;
+    //public string[] Levels;
+    private int sceneToLoad;
 
     public void ChangeScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
-        for (int i = 0; i < Levels.Length; i++)
-            if (sceneName == Levels[i])
-                currentLevelIndex = i;
+        LoadScene (SceneManager.GetSceneByName (sceneName).buildIndex);
+    }
+
+    public void LoadLevel (int levelNumber)
+    {
+        LoadScene (levelNumber + 1);
     }
 
     public void NextLevel ()
     {
-        if (currentLevelIndex >= Levels.Length - 1)
-            SceneManager.LoadScene (0);
-        else SceneManager.LoadScene (Levels[++currentLevelIndex]);
+        int nextIndex = SceneManager.GetActiveScene ().buildIndex + 1;
+        if (nextIndex > SceneManager.sceneCountInBuildSettings - 1)
+            LoadScene (0);
+        else 
+            LoadScene (nextIndex);
+    }
+
+    private void LoadScene (int buildIndex)
+    {
+        print ($"Loading scene {buildIndex}");
+        sceneToLoad = buildIndex;
+        AsyncOperation async = SceneManager.UnloadSceneAsync (SceneManager.GetActiveScene ());
+        async.completed += OnUnloadComplete;
+
+        //SceneManager.UnloadSceneAsync (SceneManager.GetActiveScene ());
+        //SceneManager.LoadScene (buildIndex, LoadSceneMode.Additive);
+        //SceneManager.SetActiveScene (SceneManager.GetSceneByBuildIndex (buildIndex));
+    }
+
+    private void OnUnloadComplete (AsyncOperation async)
+    {
+        async.completed -= OnUnloadComplete;
+        SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive).completed += SetActive;
+    }
+
+    private void SetActive (AsyncOperation async)
+    {
+        async.completed -= SetActive;
+        SceneManager.SetActiveScene (SceneManager.GetSceneByBuildIndex (sceneToLoad));
     }
 }

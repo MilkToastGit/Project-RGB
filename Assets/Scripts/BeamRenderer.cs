@@ -11,7 +11,8 @@ public class BeamRenderer : Singleton<BeamRenderer>
     [SerializeField]
     private int poolSize;
 
-    private LineRenderer[] renderers;
+    private LineRenderer[] _renderers;
+    private LineRenderer[] renderers { get { if (_renderers == null) AttachRenderers (poolSize); return _renderers; } }
     private int activeRenderer;
 
     private void Awake ()
@@ -50,9 +51,10 @@ public class BeamRenderer : Singleton<BeamRenderer>
 
     private void AttachRenderers (int amount)
     {
-        renderers = new LineRenderer[amount];
+        _renderers = new LineRenderer[amount];
         for (int i = 0; i < amount; i++)
-            renderers[i] = Instantiate (rendererPrefab, transform).GetComponent<LineRenderer> ();
+            _renderers[i] = Instantiate (rendererPrefab, transform).GetComponent<LineRenderer> ();
+        print (_renderers.Length);
     }
 
     private void UnrenderBeams ()

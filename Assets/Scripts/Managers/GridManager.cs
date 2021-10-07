@@ -19,7 +19,6 @@ public class GridManager : Singleton<GridManager>
     private IsoGrid grid;
 
     [ContextMenu ("GenerateGrid")]
-    [InitializeOnLoadMethod]
     public void GenerateGrid ()
     {
         grid = new IsoGrid (gridSize, gridSpacing, workingArea, GetComponentsInChildren<GridObject> ());
@@ -41,6 +40,11 @@ public class GridManager : Singleton<GridManager>
         EventManager.Instance.GridObjectMoved ();
     }
 
+    private void OnDisable ()
+    {
+        EventManager.Instance.OnGridObjectMoved -= PropagateBeams;
+    }
+
     private void PropagateBeams ()
     {
         print ("Step Two");
@@ -54,6 +58,9 @@ public class GridManager : Singleton<GridManager>
         print ("Rendering");
         BeamRenderer.Instance.Render ();
         EventManager.Instance.AllBeamsRendered ();
+
+        if (grid.AllOutputsCorrect)
+            EventManager.Instance.AllOutputsCorrect ();
 
         print ("Propagation Complete");
     }
@@ -97,6 +104,17 @@ public class IsoGrid
     [SerializeField] private GridObject[,] grid;
     [SerializeField] private Vector2Int gridSize, workingMin, workingMax;
     [SerializeField] private Vector2 worldSize, spacing;
+    [SerializeField] private Output[] outputs;
+
+    public bool AllOutputsCorrect 
+    {
+        get
+        {
+            foreach (Output output in outputs)
+                if (!output.Correct) return false;
+            return true;
+        }
+    }
 
     public GridObject this[Vector2Int i]
     {
@@ -126,6 +144,7 @@ public class IsoGrid
 
         if (gridObjects != null)
         {
+            List<Output> outputList = new List<Output> ();
             foreach (GridObject obj in gridObjects)
             {
                 Debug.Log ($"({obj.GridPosition}) {obj.name}");
@@ -133,8 +152,12 @@ public class IsoGrid
                 {
                     obj.SetPosition (WorldToGrid (obj.transform.position, false));
                     grid[obj.GridPosition.x, obj.GridPosition.y] = obj;
+                    if (obj.Type == GridObjectType.Output)
+                        outputList.Add (obj as Output);
                 }
             }
+            outputs = outputList.ToArray ();
+            Debug.Log (outputs.Length);
         }
 
         for (int y = 0; y < size.y; y++)
@@ -160,7 +183,6 @@ public class IsoGrid
             // If cardinal
             if (direction % 2 == 0)
             {
-                Debug.Log ("Line is Cardinal.");
                 // Check above and below line for wall
                 Vector2Int abovePoint = TranslatePoint (lastPoint, direction - 1);
                 Vector2Int belowPoint = TranslatePoint (lastPoint, direction + 1);

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ShowLevelCompleteScreen : MonoBehaviour
 {
+    public GameObject enableObject;
+
     private void Awake ()
     {
         if (ManagerLoader.loaded) OnManagersLoaded ();
@@ -16,8 +18,13 @@ public class ShowLevelCompleteScreen : MonoBehaviour
         EventManager.Instance.OnAllOutputsCorrect += ShowScreen;
     }
 
+    private void OnDisable ()
+    {
+        EventManager.Instance.OnAllOutputsCorrect -= ShowScreen;
+    }
+
     private void ShowScreen ()
     {
-        gameObject.SetActive (true);
+        enableObject.SetActive (true);
     }
 }

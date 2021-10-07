@@ -12,6 +12,7 @@ public class ManagerLoader : MonoBehaviour
 
     private void Awake ()
     {
+        if (loaded) return;
         AsyncOperation managerLoad = SceneManager.LoadSceneAsync (PersistentSceneName, LoadSceneMode.Additive);
         managerLoad.completed += ManagersLoaded;
     }

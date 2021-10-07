@@ -7,8 +7,10 @@ public class Output : GridObject
     public override GridObjectType Type => GridObjectType.Output;
     [SerializeField] private LightBeam requiredBeam;
     private SpriteRenderer outerBox, innerBox;
+    private bool correct = false;
 
     private BeamRadial currentInput = new BeamRadial ();
+    public bool Correct => correct;
 
     protected override void OnEnable ()
     {
@@ -17,6 +19,7 @@ public class Output : GridObject
         outerBox = boxes[0];
         innerBox = boxes[1];
         outerBox.color = requiredBeam.Colour;
+        innerBox.color = Color.black;
     }
 
     public override void ReceiveBeam (LightBeam beam)
@@ -34,10 +37,9 @@ public class Output : GridObject
         foreach (LightBeam beam in currentInput)
             combinedInput += beam;
 
-        print (combinedInput.Colour);
+        print ($"combined input {combinedInput.Colour}");
         innerBox.color = combinedInput.Colour;
-        if (combinedInput.SameColour (requiredBeam))
-            Debug.Log ($"CORRECT BEAM ENTERED OUTPUT NODE {gameObject.name}");
+        correct = combinedInput.SameColour (requiredBeam);
     }
 
     private void OnBeamCancelled (LightBeam beam)
@@ -51,5 +53,12 @@ public class Output : GridObject
         base.OnManagersLoaded ();
         EventManager.Instance.OnAllBeamsRendered += CheckInput;
         EventManager.Instance.OnGridObjectMoved += ResetInput;
+    }
+
+    protected override void OnDisable ()
+    {
+        base.OnDisable ();
+        EventManager.Instance.OnAllBeamsRendered -= CheckInput;
+        EventManager.Instance.OnGridObjectMoved -= ResetInput;
     }
 }
