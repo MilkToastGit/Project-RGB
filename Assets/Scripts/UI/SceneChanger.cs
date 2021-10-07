@@ -15,10 +15,9 @@ public class SceneChanger : MonoBehaviour
         LoadScene (SceneManager.GetSceneByName (sceneName).buildIndex);
     }
 
-    public void LoadLevel (int levelNumber)
-    {
-        LoadScene (levelNumber + 1);
-    }
+    public void LoadMenu () => LoadScene (0);
+
+    public void LoadLevel (int levelNumber) => LoadScene (levelNumber + 1);
 
     public void NextLevel ()
     {
@@ -32,8 +31,8 @@ public class SceneChanger : MonoBehaviour
     private void LoadScene (int buildIndex)
     {
         firstLoad = false;
-        //print ($"Loading scene {buildIndex}");
         sceneToLoad = buildIndex;
+        print ($"Unloading scene {SceneManager.GetActiveScene ().name}");
         AsyncOperation async = SceneManager.UnloadSceneAsync (SceneManager.GetActiveScene ());
         async.completed += OnUnloadComplete;
 
@@ -45,6 +44,7 @@ public class SceneChanger : MonoBehaviour
     private void OnUnloadComplete (AsyncOperation async)
     {
         async.completed -= OnUnloadComplete;
+        print ($"Loading scene {SceneManager.GetSceneByBuildIndex (sceneToLoad).name} at build index {sceneToLoad}");
         SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive).completed += SetActive;
     }
 

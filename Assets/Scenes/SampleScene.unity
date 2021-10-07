@@ -162,6 +162,7 @@ MonoBehaviour:
     workingMax: {x: 5, y: 5}
     worldSize: {x: 12, y: 6}
     spacing: {x: 2, y: 1}
+    outputs: []
 --- !u!4 &111101085
 Transform:
   m_ObjectHideFlags: 0

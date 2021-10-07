@@ -11,11 +11,14 @@ public class Redirector : GridObject.MultiInput
     [Range (0, 7)]
     [SerializeField] private int outputDirection;
 
+    private SpriteRenderer arrow;
     private int preRotateDirection;
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        arrow = GetComponentsInChildren<SpriteRenderer> ()[1];
+        arrow.color = rotatable ? Color.white : Color.grey;
         SetRotation (outputDirection);
     }
 
