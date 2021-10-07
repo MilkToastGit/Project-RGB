@@ -4,7 +4,7 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
     private static readonly float moveThreshold = 0.15f;
-    private static readonly float LongPressThreshold = 0.5f;
+    private static readonly float LongPressThreshold = 0.3f;
 
     public event Action<Vector2> OnInteractStart;
     public event Action<Vector2> OnInteractEnd;

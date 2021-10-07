@@ -21,6 +21,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
                     instance = obj.AddComponent<T> ();
                 }
             }
+            ////print (instance.gameObject.name);
             return instance;
         }
     }

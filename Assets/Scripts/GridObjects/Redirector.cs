@@ -11,11 +11,14 @@ public class Redirector : GridObject.MultiInput
     [Range (0, 7)]
     [SerializeField] private int outputDirection;
 
+    private SpriteRenderer arrow;
     private int preRotateDirection;
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        arrow = GetComponentsInChildren<SpriteRenderer> ()[1];
+        arrow.color = rotatable ? Color.white : Color.grey;
         SetRotation (outputDirection);
     }
 
@@ -54,13 +57,14 @@ public class Redirector : GridObject.MultiInput
 
     protected override void OnPressDragStart ()
     {
-        print (outputDirection);
+        //print (outputDirection);
         if (!rotatable)
         {
             base.OnPressDragStart ();
             return;
         }
 
+        transform.localScale = Vector3.one * 1.5f;
         preRotateDirection = outputDirection;
     }
 
@@ -71,6 +75,8 @@ public class Redirector : GridObject.MultiInput
             base.OnPressDragEnd ();
             return;
         }
+
+        transform.localScale = Vector3.one;
         if (outputDirection != preRotateDirection)
             EventManager.Instance.GridObjectMoved ();
     }

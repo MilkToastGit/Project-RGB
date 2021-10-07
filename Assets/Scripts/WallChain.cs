@@ -38,7 +38,7 @@ public class WallChain : MonoBehaviour
         List<Vector3> wallPoints = new List<Vector3> ();
 
         foreach (Wall wall in walls)
-            wallPoints.Add (GridManager.Instance.GridToWorld (wall.GridPosition).ToVector3 ());
+            wallPoints.Add (wall.transform.position);
 
         line.positionCount = wallPoints.Count;
         line.SetPositions (wallPoints.ToArray ());
