@@ -257,6 +257,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 34624869}
   m_CullTransparentMesh: 1
+--- !u!1 &50715331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 50715333}
+  - component: {fileID: 50715332}
+  m_Layer: 0
+  m_Name: Instantiate Persistent Scene
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &50715332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50715331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29063d8f56cd64a4e91ee52fa07783a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &50715333
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50715331}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &60188414
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +403,7 @@ GameObject:
   - component: {fileID: 74800042}
   - component: {fileID: 74800041}
   m_Layer: 5
-  m_Name: LevelButton_6
+  m_Name: 6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -432,12 +475,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 6
           m_FloatArgument: 0
           m_StringArgument: LevelSix
           m_BoolArgument: 0
@@ -733,7 +776,7 @@ GameObject:
   - component: {fileID: 387174680}
   - component: {fileID: 387174679}
   m_Layer: 5
-  m_Name: LevelButton_7
+  m_Name: 7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -805,12 +848,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 7
           m_FloatArgument: 0
           m_StringArgument: LevelSeven
           m_BoolArgument: 0
@@ -1689,7 +1732,7 @@ GameObject:
   - component: {fileID: 705557326}
   - component: {fileID: 705557325}
   m_Layer: 5
-  m_Name: LevelButton_2
+  m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1761,12 +1804,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: LevelTwo
           m_BoolArgument: 0
@@ -3579,7 +3622,7 @@ GameObject:
   - component: {fileID: 1335965716}
   - component: {fileID: 1335965715}
   m_Layer: 5
-  m_Name: LevelButton_9
+  m_Name: 9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3651,12 +3694,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 9
           m_FloatArgument: 0
           m_StringArgument: LevelNine
           m_BoolArgument: 0
@@ -3712,7 +3755,7 @@ GameObject:
   - component: {fileID: 1495863421}
   - component: {fileID: 1495863420}
   m_Layer: 5
-  m_Name: LevelButton_8
+  m_Name: 8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3784,12 +3827,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 8
           m_FloatArgument: 0
           m_StringArgument: LevelEight
           m_BoolArgument: 0
@@ -4055,7 +4098,7 @@ GameObject:
   - component: {fileID: 1628843447}
   - component: {fileID: 1628843451}
   m_Layer: 5
-  m_Name: LevelButton_1
+  m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4125,14 +4168,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2332186948664848433, guid: f5db406df83094442b28356462f09094, type: 3}
+      - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: LevelOne
           m_BoolArgument: 0
@@ -4187,17 +4230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aaf1c52c5d1b4c4ba1c9ef514f9f211, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName:
-  - LevelOne
-  - LevelTwo
-  - LevelThree
-  - LevelFour
-  - LevelFive
-  - LevelSix
-  - LevelSeven
-  - LevelEight
-  - LevelNine
-  - LevelTen
 --- !u!1 &1698304577
 GameObject:
   m_ObjectHideFlags: 0
@@ -4624,7 +4656,7 @@ GameObject:
   - component: {fileID: 1817437298}
   - component: {fileID: 1817437297}
   m_Layer: 5
-  m_Name: LevelButton_10
+  m_Name: 10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4696,12 +4728,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 10
           m_FloatArgument: 0
           m_StringArgument: LevelTen
           m_BoolArgument: 0
@@ -4757,7 +4789,7 @@ GameObject:
   - component: {fileID: 1846650695}
   - component: {fileID: 1846650694}
   m_Layer: 5
-  m_Name: LevelButton_4
+  m_Name: 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4829,12 +4861,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 4
           m_FloatArgument: 0
           m_StringArgument: LevelFour
           m_BoolArgument: 0
@@ -5024,7 +5056,7 @@ GameObject:
   - component: {fileID: 1876762480}
   - component: {fileID: 1876762479}
   m_Layer: 5
-  m_Name: LevelButton_5
+  m_Name: 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5096,12 +5128,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 5
           m_FloatArgument: 0
           m_StringArgument: LevelFive
           m_BoolArgument: 0
@@ -5425,7 +5457,7 @@ GameObject:
   - component: {fileID: 1991830519}
   - component: {fileID: 1991830518}
   m_Layer: 5
-  m_Name: LevelButton_3
+  m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5497,12 +5529,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1628843451}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LoadLevel
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: LevelThree
           m_BoolArgument: 0

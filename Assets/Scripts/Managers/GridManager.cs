@@ -19,15 +19,13 @@ public class GridManager : Singleton<GridManager>
     private IsoGrid grid;
 
     [ContextMenu ("GenerateGrid")]
-    [InitializeOnLoadMethod]
-    private void GenerateGrid ()
+    public void GenerateGrid ()
     {
         grid = new IsoGrid (gridSize, gridSpacing, workingArea, GetComponentsInChildren<GridObject> ());
     }
 
     private void Awake ()
     {
-        GenerateGrid ();
         if (ManagerLoader.loaded)
             OnManagersLoaded ();
         else
@@ -38,29 +36,47 @@ public class GridManager : Singleton<GridManager>
     {
         ManagerLoader.OnManagersLoaded -= OnManagersLoaded;
         EventManager.Instance.OnGridObjectMoved += PropagateBeams;
+        if (SceneChanger.firstLoad) 
+            OnSceneLoaded ();
+        else 
+            EventManager.Instance.OnSceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded ()
+    {
+        GenerateGrid ();
         EventManager.Instance.GridObjectMoved ();
+    }
+
+    private void OnDisable ()
+    {
+        EventManager.Instance.OnGridObjectMoved -= PropagateBeams;
+        EventManager.Instance.OnSceneLoaded -= OnSceneLoaded;
     }
 
     private void PropagateBeams ()
     {
-        print ("Step Two");
+        //print ("Step Two");
         // Step 2
         for (int i = 0; i < maxPropagationSteps && EventManager.Instance.AllBeamsTerminatedHasListeners; i++)
         {
-            print ($"Propagating step {i}, remaining listeners? {EventManager.Instance.AllBeamsTerminatedHasListeners}");
+            //print ($"Propagating step {i}, remaining listeners? {EventManager.Instance.AllBeamsTerminatedHasListeners}");
             EventManager.Instance.AllBeamsTerminated ();
         }
 
-        print ("Rendering");
+        //print ("Rendering");
         BeamRenderer.Instance.Render ();
         EventManager.Instance.AllBeamsRendered ();
 
-        print ("Propagation Complete");
+        if (grid.AllOutputsCorrect)
+            EventManager.Instance.AllOutputsCorrect ();
+
+        //print ("Propagation Complete");
     }
 
     public Vector2Int CastBeam (LightBeam beam, out bool hitWall, out Vector2 wallHitPoint)
     {
-        Debug.Log ("Start " + beam.Colour);
+        //Debug.Log ("Start " + beam.Colour);
         if (beam.Origin == null) throw new System.Exception ("Cannot cast beam with no origin.");
 
         if (grid.GridCast (beam.Origin, beam.Direction, out Vector2Int hitPoint, out hitWall, out wallHitPoint))
@@ -69,7 +85,7 @@ public class GridManager : Singleton<GridManager>
                 grid[hitPoint]?.ReceiveBeam (beam);
         }
 
-        Debug.Log ("End " + beam.Colour);
+        //Debug.Log ("End " + beam.Colour);
         return hitPoint;
     }
 
@@ -97,6 +113,17 @@ public class IsoGrid
     [SerializeField] private GridObject[,] grid;
     [SerializeField] private Vector2Int gridSize, workingMin, workingMax;
     [SerializeField] private Vector2 worldSize, spacing;
+    [SerializeField] private Output[] outputs;
+
+    public bool AllOutputsCorrect 
+    {
+        get
+        {
+            foreach (Output output in outputs)
+                if (!output.Correct) return false;
+            return true;
+        }
+    }
 
     public GridObject this[Vector2Int i]
     {
@@ -122,19 +149,24 @@ public class IsoGrid
         Vector2Int halfWorkSize = new Vector2Int (Mathf.FloorToInt (workingArea.x / 2), Mathf.FloorToInt (workingArea.y / 2)); // 1, 1
         workingMin = halfGridSize - halfWorkSize;
         workingMax = halfGridSize + halfWorkSize;
-        Debug.Log (workingMax);
+        //Debug.Log (workingMax);
 
         if (gridObjects != null)
         {
+            List<Output> outputList = new List<Output> ();
             foreach (GridObject obj in gridObjects)
             {
-                Debug.Log ($"({obj.GridPosition}) {obj.name}");
+                //Debug.Log ($"({obj.GridPosition}) {obj.name}");
                 if (obj != null)
                 {
                     obj.SetPosition (WorldToGrid (obj.transform.position, false));
                     grid[obj.GridPosition.x, obj.GridPosition.y] = obj;
+                    if (obj.Type == GridObjectType.Output)
+                        outputList.Add (obj as Output);
                 }
             }
+            outputs = outputList.ToArray ();
+            //Debug.Log (outputs.Length);
         }
 
         for (int y = 0; y < size.y; y++)
@@ -160,7 +192,6 @@ public class IsoGrid
             // If cardinal
             if (direction % 2 == 0)
             {
-                Debug.Log ("Line is Cardinal.");
                 // Check above and below line for wall
                 Vector2Int abovePoint = TranslatePoint (lastPoint, direction - 1);
                 Vector2Int belowPoint = TranslatePoint (lastPoint, direction + 1);
@@ -169,31 +200,31 @@ public class IsoGrid
                     this[abovePoint] != null && this[abovePoint].Type == GridObjectType.Wall &&
                     this[belowPoint] != null && this[belowPoint].Type == GridObjectType.Wall)
                 {
-                    Debug.Log ("Line passes through walls. Checking if connected...");
+                    //Debug.Log ("Line passes through walls. Checking if connected...");
                     Wall above = this[abovePoint] as Wall;
                     Wall below = this[belowPoint] as Wall;
                     if (above.IsConnected (below))
                     {
-                        Debug.Log ("Walls are connected. Colliding.");
+                        //Debug.Log ("Walls are connected. Colliding.");
                         hitPoint = lastPoint;
                         hitWall = true;
                         wallHitPoint = (GridToWorld (abovePoint) + GridToWorld (belowPoint)) / 2;
                         return true;
                     }
-                    else Debug.Log ("Walls are NOT connected. Ignoring.");
+                    //else Debug.Log ("Walls are NOT connected. Ignoring.");
                 }
             }
 
             Vector2Int point = TranslatePoint (lastPoint, direction);
             if (!point.x.isBetween (0, gridSize.x - 1) || !point.y.isBetween (0, gridSize.y - 1))
             {
-                Debug.Log ($"point ({point.x}, {point.y}) is out of bounds");
+                //Debug.Log ($"point ({point.x}, {point.y}) is out of bounds");
                 hitPoint = lastPoint;
                 return false;
             }
             if (this[point] != null)
             {
-                Debug.Log ($"point ({point.x}, {point.y}) contains object ({this[point]})");
+                //Debug.Log ($"point ({point.x}, {point.y}) contains object ({this[point]})");
                 hitPoint = point;
                 return true;
             }

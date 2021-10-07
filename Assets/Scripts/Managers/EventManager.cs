@@ -12,4 +12,10 @@ public class EventManager : SingletonPersistent<EventManager>
 
     public event Action OnAllBeamsRendered;
     public void AllBeamsRendered () => OnAllBeamsRendered?.Invoke ();
+
+    public event Action OnAllOutputsCorrect;
+    public void AllOutputsCorrect () => OnAllOutputsCorrect?.Invoke ();
+
+    public event Action OnSceneLoaded;
+    public void SceneLoaded () => OnSceneLoaded?.Invoke ();
 }
