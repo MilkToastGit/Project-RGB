@@ -35,7 +35,6 @@ public class GridManager : Singleton<GridManager>
     private void OnManagersLoaded ()
     {
         ManagerLoader.OnManagersLoaded -= OnManagersLoaded;
-        EventManager.Instance.OnGridObjectMoved += PropagateBeams;
         if (SceneChanger.firstLoad) 
             OnSceneLoaded ();
         else 
@@ -46,6 +45,8 @@ public class GridManager : Singleton<GridManager>
     {
         GenerateGrid ();
         EventManager.Instance.GridObjectMoved ();
+        PropagateBeams ();
+        EventManager.Instance.OnGridObjectMoved += PropagateBeams;
     }
 
     private void OnDisable ()

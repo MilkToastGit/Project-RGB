@@ -11,7 +11,7 @@ public class Emitter : GridObject
 
     public override void ReceiveBeam (LightBeam beam) { }
 
-    private void EmitBeam ()
+    public void EmitBeam ()
     {
         //UnityEngine.Debug.Log("EMITTING");
         beam.Cast (GridPosition, direction);
