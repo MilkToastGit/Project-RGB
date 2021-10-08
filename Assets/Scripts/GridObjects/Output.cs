@@ -9,7 +9,7 @@ public class Output : GridObject
     private SpriteRenderer outerBox, innerBox;
     private bool correct = false;
 
-    private BeamRadial currentInput = new BeamRadial ();
+    private List<LightBeam> currentInput = new List<LightBeam> ();
     public bool Correct => correct;
 
     protected override void OnEnable ()
@@ -24,8 +24,10 @@ public class Output : GridObject
 
     public override void ReceiveBeam (LightBeam beam)
     {
+        if (gameObject.name == "TEST")
+            print ($"Received {beam.Colour} from point {beam.Origin} in direction {beam.Direction}");
         beam.OnBeamCancelled += OnBeamCancelled;
-        currentInput.AddCombine (beam);
+        currentInput.Add (beam);
     }
 
     private void ResetInput () => currentInput.Clear ();
