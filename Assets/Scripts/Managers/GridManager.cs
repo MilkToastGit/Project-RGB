@@ -17,6 +17,7 @@ public class GridManager : Singleton<GridManager>
     [SerializeField]
     [HideInInspector]
     private IsoGrid grid;
+    private GridRenderer gridRenderer;
 
     [ContextMenu ("GenerateGrid")]
     public void GenerateGrid ()
@@ -26,6 +27,7 @@ public class GridManager : Singleton<GridManager>
 
     private void Awake ()
     {
+        gridRenderer = GetComponent<GridRenderer> ();
         if (ManagerLoader.loaded)
             OnManagersLoaded ();
         else
@@ -44,6 +46,7 @@ public class GridManager : Singleton<GridManager>
     private void OnSceneLoaded ()
     {
         GenerateGrid ();
+        gridRenderer.RenderGrid (grid);
         EventManager.Instance.GridObjectMoved ();
         PropagateBeams ();
         EventManager.Instance.OnGridObjectMoved += PropagateBeams;
@@ -111,6 +114,10 @@ public class GridManager : Singleton<GridManager>
 [System.Serializable]
 public class IsoGrid
 {
+    public int Width => gridSize.x;
+    public int Height => gridSize.y;
+    public Vector2 WorldSize => worldSize;
+
     [SerializeField] private GridObject[,] grid;
     [SerializeField] private Vector2Int gridSize, workingMin, workingMax;
     [SerializeField] private Vector2 worldSize, spacing;
@@ -235,6 +242,21 @@ public class IsoGrid
 
         hitPoint = lastPoint;
         return false;
+    }
+
+    public Vector2Int GetBoundPointInDirection (Vector2Int origin, int direction)
+    {
+        Vector2Int lastPoint = origin;
+        for (int i = 0; i < Mathf.Max (gridSize.x, gridSize.y); i++)
+        {
+            Vector2Int newPoint = TranslatePoint (lastPoint, direction);
+            if (!newPoint.x.isBetween (0, gridSize.x - 1) || !newPoint.y.isBetween (0, gridSize.y - 1))
+                break;
+
+            lastPoint = newPoint;
+        }
+
+        return lastPoint;
     }
 
     public void MoveObject (GridObject obj, Vector2Int destination)
