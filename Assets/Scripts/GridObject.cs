@@ -81,7 +81,7 @@ public abstract class GridObject : MonoBehaviour
                 //print ($"{name} Contains Input? {inputBuffer.Contains (beam)}, Contains Output? {outputBeams[beam.Direction + 4] != null}");
                 foreach (LightBeam outBeam in outputBeams)
                     outBeam.CancelBeam ();
-                //print ($"({name}) received new beam; cancelling outputs");
+                print ($"({name}) received new beam; cancelling outputs");
             }
 
             AwaitOutput ();
