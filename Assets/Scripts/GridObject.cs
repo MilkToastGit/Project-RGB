@@ -244,5 +244,7 @@ public enum GridObjectType
     Splitter,
     Redirector,
     Output,
+    ThruNode,
+    Window,
     Wall
 }
